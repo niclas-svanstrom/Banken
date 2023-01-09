@@ -18,6 +18,9 @@ Alla kunder
         <td>
             {{ c.City }}
         </td>
+        <td>
+            <a href="/customer/{{ c.Id }}" class="btn">More info</a>
+        </td>
     </tr>
     {% endfor %}
 </table>

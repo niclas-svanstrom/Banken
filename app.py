@@ -24,6 +24,11 @@ def customers():
     customers = Customer.query.all()
     return render_template("customers.html", customers=customers)
 
+@app.route("/customer/<id>")
+def customer(id):
+    customer = Customer.query.filter_by(Id=id).first()
+    return render_template("customer.html", customer=customer)
+
 @app.route("/category/<id>")
 def category(id):
     return "Hej2"

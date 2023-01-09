@@ -1,0 +1,12 @@
+{% extends "basetemplate.html" %}
+
+{% block title %}
+Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
+{% endblock %}
+
+{% block content %}
+
+<h1>{{ customer.Surname }}, {{ customer.GivenName }}</h1>
+<p>Kunden bor i {{ customer.City }}</p>
+
+{% endblock %}
