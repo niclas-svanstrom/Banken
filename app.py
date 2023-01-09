@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
-from model import db, seedData
+from model import db, seedData, Customer
 
  
 app = Flask(__name__)
@@ -18,6 +18,11 @@ def startpage():
     return "Hej"
     # trendingCategories = Category.query.all()
     # return render_template("index.html", trendingCategories=trendingCategories)
+
+@app.route("/customers")
+def customers():
+    customers = Customer.query.all()
+    return render_template("customers.html", customers=customers)
 
 @app.route("/category/<id>")
 def category(id):

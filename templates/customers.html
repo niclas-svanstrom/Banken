@@ -1,0 +1,24 @@
+{% extends "basetemplate.html" %}
+
+{% block title %}
+Alla kunder
+{% endblock %}
+
+{% block content %}
+
+<table>
+    {% for c in customers %}
+    <tr>
+        <td>
+            {{ c.GivenName }}
+        </td>
+        <td>
+            {{ c.Surname }}
+        </td>
+        <td>
+            {{ c.City }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
