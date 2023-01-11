@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
-from model import db, seedData, Customer
+from model import db, seedData, Customer, Account
 
  
 app = Flask(__name__)
@@ -14,10 +14,12 @@ migrate = Migrate(app,db)
  
 
 @app.route("/")
+def login():
+    return render_template("login.html")
+
+@app.route("/startpage")
 def startpage():
-    return "Hej"
-    # trendingCategories = Category.query.all()
-    # return render_template("index.html", trendingCategories=trendingCategories)
+    return render_template("start.html", customers=len(Customer.query.all()), accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]))
 
 @app.route("/customers")
 def customers():
@@ -41,5 +43,5 @@ if __name__  == "__main__":
         upgrade()
     
         seedData(db)
-        app.run()
+        app.run(debug=True)
 

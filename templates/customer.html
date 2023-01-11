@@ -1,12 +1,14 @@
-{% extends "basetemplate.html" %}
+{% extends "basetemplate3.html" %}
 
 {% block title %}
 Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
 {% endblock %}
 
 {% block content %}
-
-<h1>{{ customer.Surname }}, {{ customer.GivenName }}</h1>
-<p>Kunden bor i {{ customer.City }}</p>
-
+<div class="card">
+    <div class="card-body">
+        <h1>{{ customer.Surname }}, {{ customer.GivenName }}</h1>
+        <p>Kunden bor i {{ customer.City }}</p>
+    </div>
+</div>
 {% endblock %}

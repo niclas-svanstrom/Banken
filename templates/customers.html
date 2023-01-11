@@ -1,4 +1,4 @@
-{% extends "basetemplate2.html" %}
+{% extends "basetemplate3.html" %}
 
 {% block title %}
 Alla kunder
@@ -6,22 +6,39 @@ Alla kunder
 
 {% block content %}
 
-<table>
-    {% for c in customers %}
-    <tr>
-        <td>
-            {{ c.GivenName }}
-        </td>
-        <td>
-            {{ c.Surname }}
-        </td>
-        <td>
-            {{ c.City }}
-        </td>
-        <td>
-            <a href="/customer/{{ c.Id }}" class="btn">More info</a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">Kunder</h4>
+        <table class="table">
+            <tr>
+                <th>
+                    Namn
+                </th>
+                <th>
+                    Efternamn
+                </th>
+                <th>
+                    Stad
+                </th>
+            </tr>
+            {% for c in customers %}
+            <tr>
+                <td>
+                    {{ c.GivenName }}
+                </td>
+                <td>
+                    {{ c.Surname }}
+                </td>
+                <td>
+                    {{ c.City }}
+                </td>
+                <td>
+                    <a href="/customer/{{ c.Id }}" class="btn">More info</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
 {% endblock %}
