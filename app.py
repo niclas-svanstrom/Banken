@@ -23,8 +23,40 @@ def startpage():
 
 @app.route("/customers")
 def customers():
-    customers = Customer.query.all()
-    return render_template("customers.html", customers=customers)
+    sortColumn = request.args.get('sortColumn', 'namn')
+    sortOrder = request.args.get('sortOrder', 'asc')
+    q = request.args.get('q', '')
+    page = int(request.args.get('page', 1))
+
+    listOfCustomers = Customer.query
+
+    listOfCustomers = listOfCustomers.filter(
+        Customer.GivenName.like('%' + q + '%') |
+        Customer.City.like('%' + q + '%')
+    )
+    if sortColumn == "namn":
+        if sortOrder == "asc":
+            listOfCustomers = listOfCustomers.order_by(Customer.GivenName.asc())
+        else:
+            listOfCustomers = listOfCustomers.order_by(Customer.GivenName.desc())
+    elif sortColumn == "city":
+        if sortOrder == "asc":
+            listOfCustomers = listOfCustomers.order_by(Customer.City.asc())
+        else:
+            listOfCustomers = listOfCustomers.order_by(Customer.City.desc())
+
+    paginationObject = listOfCustomers.paginate(page=page, per_page=25, error_out=False)
+
+    return render_template("customers.html", 
+                            listOfCustomers=paginationObject.items, 
+                            pages = paginationObject.pages, 
+                            sortOrder=sortOrder, 
+                            has_next=paginationObject.has_next,
+                            has_prev=paginationObject.has_prev,
+                            page=page,
+                            sortColumn=sortColumn, 
+                            q=q 
+                            )
 
 @app.route("/customer/<id>")
 def customer(id):

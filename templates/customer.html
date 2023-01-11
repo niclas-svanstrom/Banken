@@ -4,7 +4,199 @@
 Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
 {% endblock %}
 
+
+{{ customer.GivenName }}
+{{ customer.Surname }}
+{{ customer.Streetaddress }}
+{{ customer.City }}
+{{ customer.Zipcode }}
+{{ customer.Country }}
+{{ customer.CountryCode }}
+{{ customer.Birthday }}
+{{ customer.NationalId }}
+{{ customer.TelephoneCountryCode }}
+{{ customer.Telephone }}
+{{ customer.EmailAddress }}
+
+
 {% block content %}
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Kundkort</h4>
+            <form class="form-sample">
+                <p class="card-description"> Personal info </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">First Name</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{customer.GivenName}}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Last Name</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Surname }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Date of Birth</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Birthday }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">National ID</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.NationalId }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Phone country code</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.TelephoneCountryCode }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Phonenumber</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Telephone }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Date of Birth</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Birthday }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">National ID</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.NationalId }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Emailaddress</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.EmailAddress }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="card-description"> Address </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Address 1</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Streetaddress }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">City</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.City }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Zipcode</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Zipcode }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Postcode</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Streetaddress }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Countrycode</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.CountryCode }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Country</label>
+                            <div class="col-sm-9">
+                                <p class="form-control">
+                                    {{ customer.Country }}</p>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="card">
     <div class="card-body">
         <h1>{{ customer.Surname }}, {{ customer.GivenName }}</h1>

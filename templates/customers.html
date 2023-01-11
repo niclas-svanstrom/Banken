@@ -5,23 +5,41 @@ Alla kunder
 {% endblock %}
 
 {% block content %}
-
+Du är på sidan {{ page }} av totalt {{ pages }}
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title">Kunder</h4>
+        <div class="row">
+            <h4 class="card-title">Kunder</h4>
+            <form method="get">
+                <input type="text" placeholder="Sök" name="q" value="{{ q }}">
+                <input class="btn" type="submit" value="Sök">
+            </form>
+        </div>
         <table class="table">
             <tr>
                 <th>
                     Namn
+                    <a href="/customers?sortColumn=namn&sortOrder=asc&q={{ q }}">
+                        <i class='mdi mdi-arrow-up'></i>
+                    </a>
+                    <a href="/customers?sortColumn=namn&sortOrder=desc&q={{ q }}">
+                        <i class='mdi mdi-arrow-down'></i>
+                    </a>
                 </th>
                 <th>
                     Efternamn
                 </th>
                 <th>
                     Stad
+                    <a href="/customers?sortColumn=city&sortOrder=asc&q={{ q }}">
+                        <i class='mdi mdi-arrow-up'></i>
+                    </a>
+                    <a href="/customers?sortColumn=city&sortOrder=desc&q={{ q }}">
+                        <i class='mdi mdi-arrow-down'></i>
+                    </a>
                 </th>
             </tr>
-            {% for c in customers %}
+            {% for c in listOfCustomers %}
             <tr>
                 <td>
                     {{ c.GivenName }}
@@ -37,7 +55,23 @@ Alla kunder
                 </td>
             </tr>
             {% endfor %}
+            <tr>
+                <td>
+                    {% if has_prev %}
+                    <a class="btn"
+                        href="/customers?page={{ page - 1 }}&sortColumn={{ sortColumn }}&sortOrder={{ sortOrder }}&q={{ q }}">Prev</a>
+                    {% endif %}
+                </td>
+                <td colspan="2" style="text-align: center;">Du är på sidan {{ page }} av totalt {{ pages }}</td>
+                <td>
+                    {% if has_next %}
+                    <a class="btn"
+                        href="/customers?page={{ page + 1 }}&sortColumn={{ sortColumn }}&sortOrder={{ sortOrder }}&q={{ q }}">Next</a>
+                    {% endif %}
+                </td>
+            </tr>
         </table>
+
     </div>
 </div>
 
