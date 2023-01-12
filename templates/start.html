@@ -71,52 +71,14 @@ Startsida
                             <table class="table">
                                 <tbody>
                                     <tr>
+                                        {% for c,t in country_customer.items() %}
+                                        <td></td>
                                         <td>
-                                            <i class="flag-icon flag-icon-us"></i>
+                                            {{ c }}
                                         </td>
-                                        <td>USA</td>
-                                        <td class="text-right"> 1500 </td>
-                                        <td class="text-right font-weight-medium"> 56.35% </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="flag-icon flag-icon-de"></i>
-                                        </td>
-                                        <td>Germany</td>
-                                        <td class="text-right"> 800 </td>
-                                        <td class="text-right font-weight-medium"> 33.25% </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="flag-icon flag-icon-au"></i>
-                                        </td>
-                                        <td>Australia</td>
-                                        <td class="text-right"> 760 </td>
-                                        <td class="text-right font-weight-medium"> 15.45% </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="flag-icon flag-icon-gb"></i>
-                                        </td>
-                                        <td>United Kingdom</td>
-                                        <td class="text-right"> 450 </td>
-                                        <td class="text-right font-weight-medium"> 25.00% </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="flag-icon flag-icon-ro"></i>
-                                        </td>
-                                        <td>Romania</td>
-                                        <td class="text-right"> 620 </td>
-                                        <td class="text-right font-weight-medium"> 10.25% </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <i class="flag-icon flag-icon-br"></i>
-                                        </td>
-                                        <td>Brasil</td>
-                                        <td class="text-right"> 230 </td>
-                                        <td class="text-right font-weight-medium"> 75.00% </td>
+                                        <td class="text-right"> {{ t }} </td>
+                                        <td class="text-right font-weight-medium"> {{ customers/t*100 }}% </td>
+                                        {% endfor %}
                                     </tr>
                                 </tbody>
                             </table>

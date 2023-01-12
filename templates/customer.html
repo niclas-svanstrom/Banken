@@ -23,7 +23,7 @@ Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Kundkort</h4>
+            <h2 class="card-title" style="text-align: center;">{{ customer.Surname }}, {{ customer.GivenName }}</h2>
             <form class="form-sample">
                 <p class="card-description"> Personal info </p>
                 <div class="row">
@@ -197,10 +197,5 @@ Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
         </div>
     </div>
 </div>
-<div class="card">
-    <div class="card-body">
-        <h1>{{ customer.Surname }}, {{ customer.GivenName }}</h1>
-        <p>Kunden bor i {{ customer.City }}</p>
-    </div>
-</div>
+
 {% endblock %}

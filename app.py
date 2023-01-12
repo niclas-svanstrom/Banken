@@ -19,7 +19,12 @@ def login():
 
 @app.route("/startpage")
 def startpage():
-    return render_template("start.html", customers=len(Customer.query.all()), accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]))
+    distinct = [x.Country for x in Customer.query.with_entities(Customer.Country).distinct()]
+    total = []
+    for c in distinct:
+        total.append(len(Customer.query.filter_by(Country=c).all()))
+    country_customer={d:t for (d,t) in zip(distinct,total)}
+    return render_template("start.html", customers=len(Customer.query.all()), accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
 
 @app.route("/customers")
 def customers():
