@@ -1,0 +1,43 @@
+{% extends "basetemplate3.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Debit</h4>
+            <form class="forms-sample">
+                <div class="form-group">
+                    <label for="exampleSelectGender">From account:</label>
+                    <select class="form-control" id="exampleSelectGender">
+                        <option>Account: {{ account.AccountType }} Balance: {{ account.Balance }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleSelectGender">To account:</label>
+                    <select class="form-control" id="exampleSelectGender">
+                        {% for a in accounts %}
+                        {% if a.AccountType != account.AccountType %}
+                        <option>Account: {{ a.AccountType }} Balance: {{ a.Balance }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputName1">Sum:</label>
+                    <input type="text" class="form-control" id="exampleInputName1" placeholder="Sum">
+                </div>
+        </div>
+        <button type="submit" class="btn btn-primary mr-2">Submit</button>
+        <button class="btn btn-dark">Cancel</button>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endblock %}

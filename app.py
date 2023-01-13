@@ -74,12 +74,25 @@ def account(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
     return render_template("account.html", account=account, trans=trans)
+    
+@app.route("/customer/<c_id>/<a_id>/debit")
+def debit(c_id, a_id):
+    account = Account.query.filter_by(Id=a_id).first()
+    accounts = Account.query.filter_by(CustomerId=c_id).all()
+    trans = Transaction.query.filter_by(AccountId=a_id).all()
+    return render_template("debit.html", account=account, trans=trans, accounts=accounts)
 
-@app.route("/category/<id>")
-def category(id):
-    return "Hej2"
-    # products = Product.query.all()
-    # return render_template("category.html", products=products)
+@app.route("/customer/<c_id>/<a_id>/credit")
+def credit(c_id, a_id):
+    account = Account.query.filter_by(Id=a_id).first()
+    trans = Transaction.query.filter_by(AccountId=a_id).all()
+    return render_template("account.html", account=account, trans=trans)
+
+@app.route("/customer/<c_id>/<a_id>/transfer")
+def transfer(c_id, a_id):
+    account = Account.query.filter_by(Id=a_id).first()
+    trans = Transaction.query.filter_by(AccountId=a_id).all()
+    return render_template("account.html", account=account, trans=trans)
 
 
 if __name__  == "__main__":

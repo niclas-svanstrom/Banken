@@ -217,9 +217,21 @@ Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
                 <td>
                     <a href="/customer/{{ customer.Id }}/{{a.Id}}" class="btn">{{ a.AccountType }}</a>
                 </td>
-                </td>
                 <td>
                     {{ a.Balance }}
+                </td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                            id="dropdownMenuOutlineButton2" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false"> Dropdown </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuOutlineButton1">
+                            <h6 class="dropdown-header">Settings</h6>
+                            <a class="dropdown-item" href="/customer/{{customer.Id}}/{{a.Id}}/debit">Debit</a>
+                            <a class="dropdown-item" href="/customer/{{customer.Id}}/{{a.Id}}/credit">Credit</a>
+                            <a class="dropdown-item" href="/customer/{{customer.Id}}/{{a.Id}}/transfer">Transfer</a>
+                        </div>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
