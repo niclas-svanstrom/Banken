@@ -6,6 +6,22 @@ from datetime import timedelta
 
 db = SQLAlchemy()
 
+class Users(db.Model):
+    __tablename__= "Users"
+    Id = db.Column(db.Integer, primary_key=True)
+    EmailAddress = db.Column(db.String(50), unique=False, nullable=False)
+    Password = db.Column(db.String(20), unique=False, nullable=False)
+    GivenName = db.Column(db.String(50), unique=False, nullable=False)
+    Surname = db.Column(db.String(50), unique=False, nullable=False)
+    RoleId = db.Column(db.Integer, db.ForeignKey('Role.Id'), nullable=False)
+
+class Role(db.Model):
+    __tablename__= "Role"
+    Id = db.Column(db.Integer, primary_key=True)
+    Role = db.Column(db.String(10), unique=False, nullable=False)
+    User_Role = db.relationship('Users', backref='Role',
+     lazy=True)
+
 class Customer(db.Model):
     __tablename__= "Customers"
     Id = db.Column(db.Integer, primary_key=True)
@@ -49,6 +65,41 @@ class Transaction(db.Model):
 
 
 def seedData(db):
+    count = Role.query.count()
+    if count < 2:
+        role1 = Role()
+        role1.Role = "Admin"
+        db.session.add(role1)
+        db.session.commit()
+        role2 = Role()
+        role2.Role = "Cashier"
+        db.session.add(role2)
+        db.session.commit()
+        count += 1
+
+    users = Users.query.all()
+    user1 = ["stefan.holmberg@systementor.se", "Hejsan123#", "Stefan", "Holmberg", 1]
+    user2 = ["stefan.holmberg@nackademin.se", "Hejsan123#", "Stefan", "Holmberg", 2]
+    user3 = ["niclas.svanstrom@hotmail.com", "password", "Niclas", "Svanström", 1]
+    userlist = {1:user1,2:user2,3:user3}
+    current = []
+    for us in users:
+        current.append(us.EmailAddress)
+    for u1 in userlist.values():
+        if u1[0] in current:
+            continue
+        else:
+            user = Users()
+            user.EmailAddress = u1[0]
+            user.Password = u1[1]
+            user.GivenName = u1[2]
+            user.Surname = u1[3]
+            user.RoleId = u1[4]
+            db.session.add(user)
+            db.session.commit()
+
+
+
     antal =  Customer.query.count()
     while antal < 500:
         customer = Customer()
