@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
-from model import db, seedData, Customer, Account
+from model import db, seedData, Customer, Account, Transaction
 
  
 app = Flask(__name__)
@@ -65,8 +65,15 @@ def customers():
 
 @app.route("/customer/<id>")
 def customer(id):
+    accounts = Account.query.filter_by(CustomerId=id).all()
     customer = Customer.query.filter_by(Id=id).first()
-    return render_template("customer.html", customer=customer)
+    return render_template("customer.html", customer=customer, accounts=accounts)
+
+@app.route("/customer/<c_id>/<a_id>")
+def account(c_id, a_id):
+    account = Account.query.filter_by(Id=a_id).first()
+    trans = Transaction.query.filter_by(AccountId=a_id).all()
+    return render_template("account.html", account=account, trans=trans)
 
 @app.route("/category/<id>")
 def category(id):

@@ -1,0 +1,50 @@
+{% extends "basetemplate3.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <h4 class="card-title">Konto: {{account.Id}} Totalt på kontot: {{account.Balance}}</h4>
+        </div>
+        <table class="table">
+            <tr>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Operation
+                </th>
+                <th>
+                    Ammount
+                </th>
+                <th>
+                    Date
+                </th>
+            </tr>
+            {% for t in trans %}
+            <tr>
+                <td>
+                    {{ t.Type }}
+                </td>
+                <td>
+                    {{ t.Operation }}
+                </td>
+                <td>
+                    {{ t.Amount }}
+                </td>
+                <td>
+                    {{ t.Date }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
