@@ -10,12 +10,17 @@
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Debit</h4>
+            <h4 class="card-title">Transfer</h4>
             <form class="forms-sample">
                 <div class="form-group">
                     <label for="exampleSelectGender">From account:</label>
                     <select class="form-control" id="exampleSelectGender">
                         <option>Account: {{ account.AccountType }} Balance: {{ account.Balance }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleSelectGender">To account:</label>
+                    <select class="form-control" id="exampleSelectGender">
                         {% for a in accounts %}
                         {% if a.AccountType != account.AccountType %}
                         <option>Account: {{ a.AccountType }} Balance: {{ a.Balance }}</option>

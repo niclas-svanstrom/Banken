@@ -85,14 +85,16 @@ def debit(c_id, a_id):
 @app.route("/customer/<c_id>/<a_id>/credit")
 def credit(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
+    accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
-    return render_template("account.html", account=account, trans=trans)
+    return render_template("credit.html", account=account, trans=trans, accounts=accounts)
 
 @app.route("/customer/<c_id>/<a_id>/transfer")
 def transfer(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
+    accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
-    return render_template("account.html", account=account, trans=trans)
+    return render_template("transfer.html", account=account, trans=trans, accounts=accounts)
 
 
 if __name__  == "__main__":
