@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 
-from model import db, seedData, Customer, Account, Transaction
+from model import db, seedData, Customer, Account, Transaction, Users
 
  
 app = Flask(__name__)
@@ -13,9 +13,16 @@ migrate = Migrate(app,db)
  
  
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def login():
-    return render_template("login.html")
+    error = None
+    users = Users.query.all()
+    if request.method == 'POST':
+        for us in users:
+            if request.form['username'] == us.EmailAddress and request.form['password'] == us.Password:
+                return redirect(url_for('startpage'))
+        error = 'Invalid Credentials. Please try Again'
+    return render_template("login.html", error=error)
 
 @app.route("/startpage")
 def startpage():
@@ -99,7 +106,7 @@ def transfer(c_id, a_id):
 
 if __name__  == "__main__":
     with app.app_context():
-        upgrade()
+        # upgrade()
     
         seedData(db)
         app.run(debug=True)
