@@ -70,16 +70,17 @@ Startsida
                         <div class="table-responsive">
                             <table class="table">
                                 <tbody>
+                                    {% for c,t in country_customer.items() %}
                                     <tr>
-                                        {% for c,t in country_customer.items() %}
                                         <td></td>
                                         <td>
                                             {{ c }}
                                         </td>
                                         <td class="text-right"> {{ t }} </td>
-                                        <td class="text-right font-weight-medium"> {{ customers/t*100 }}% </td>
-                                        {% endfor %}
+                                        <td class="text-right font-weight-medium"> {{ t/customers*100 }}%
+                                        </td>
                                     </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>

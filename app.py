@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 import pycountry
+from datetime import datetime
 
 from model import db, seedData, Customer, Account, Transaction, Users
 
@@ -12,7 +13,6 @@ app.config['SECRET_KEY'] = 'super secret key'
 db.app = app
 db.init_app(app)
 migrate = Migrate(app,db)
- 
  
 
 @app.route("/", methods=['GET', 'POST'])
@@ -39,6 +39,7 @@ def logout():
 
 @app.route("/startpage")
 def startpage():
+    customers=len(Customer.query.all())
     user = Users.query.filter_by(EmailAddress = session['username']).first()
     distinct = [x.Country for x in Customer.query.with_entities(Customer.Country).distinct()]
     total = []
@@ -46,7 +47,7 @@ def startpage():
         total.append(len(Customer.query.filter_by(Country=c).all()))
     country_customer={d:t for (d,t) in zip(distinct,total)}
     if 'loggedin' in session:
-        return render_template("start.html",user=user, customers=len(Customer.query.all()), accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
+        return render_template("start.html",user=user, customers=customers, accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
     else:
         return redirect(url_for('login'))
 
@@ -89,13 +90,43 @@ def customers():
     else:
         return redirect(url_for('login'))
 
-@app.route("/new_customer")
+@app.route("/new_customer", methods=['GET', 'POST'])
 def new_customer():
+    error = None
+    added = None
     countries = []
     for country in pycountry.countries:
         countries.append(country.name)
+    if request.method == 'POST':
+        all_customers = Customer.query.all()
+        for cus in all_customers:
+            if request.form['national_id'] == cus.NationalId:
+                error = 'National ID already exists'
+        if error == None:
+            c = Customer()
+            a = Account()
+            c.GivenName =  request.form['first_name']
+            c.Surname = request.form['last_name']
+            c.Streetaddress = request.form['address']
+            c.City = request.form['city']
+            c.Zipcode = request.form['zipcode']
+            c.Country = request.form['country']
+            c.CountryCode = pycountry.countries.get(name=request.form['country']).alpha_2
+            c.Birthday = request.form['birth']
+            c.NationalId = request.form['national_id']
+            c.TelephoneCountryCode = request.form['phone_code']
+            c.Telephone = request.form['phone_number']
+            c.EmailAddress = request.form['email']
+            start = datetime.now()
+            a.AccountType = "Personal"
+            a.Created = start
+            a.Balance = 0
+            c.Accounts.append(a)
+            db.session.add(c)
+            db.session.commit()
+            return redirect(url_for('startpage'))
     if 'loggedin' in session:
-        return render_template("new_customer.html", countries=countries)
+        return render_template("new_customer.html", countries=countries, error=error)
     else:
         return redirect(url_for('login'))
 
