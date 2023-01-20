@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
+import pycountry
 
 from model import db, seedData, Customer, Account, Transaction, Users
 
@@ -85,6 +86,16 @@ def customers():
                                 sortColumn=sortColumn, 
                                 q=q 
                                 )
+    else:
+        return redirect(url_for('login'))
+
+@app.route("/new_customer")
+def new_customer():
+    countries = []
+    for country in pycountry.countries:
+        countries.append(country.name)
+    if 'loggedin' in session:
+        return render_template("new_customer.html", countries=countries)
     else:
         return redirect(url_for('login'))
 

@@ -1,0 +1,137 @@
+{% extends "basetemplate3.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+
+{% block content %}
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="text-align: center;">Ny kund:</h2>
+            <form action="" method="post">
+                <p class="card-description"> Personal info </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">First Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="first_name" value="{{ request.form.first_name }}" required
+                                    class="form-control p_input" placeholder="Peter">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Last Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="last_name" value="{{ request.form.last_name }}" required
+                                    class="form-control p_input" placeholder="Sherman">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Date of Birth</label>
+                            <div class="col-sm-9">
+                                <input type="date" name="birth" value="{{ request.form.birth }}" required
+                                    class="form-control p_input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">National ID</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="national_id" value="{{ request.form.national_id }}" required
+                                    class="form-control p_input" placeholder="19690227-4728">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Phone country code</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="phone_code" value="{{ request.form.phone_code }}" required
+                                    class="form-control p_input" placeholder="61">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Phonenumber</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="phone_number" value="{{ request.form.phone_number }}" required
+                                    class="form-control p_input" placeholder="801263-6123">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Emailaddress</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="email" value="{{ request.form.email }}" required
+                                    class="form-control p_input" placeholder="P-Sherman@findingnemo.com">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="card-description"> Address </p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Address</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="address" value="{{ request.form.address }}" required
+                                    class="form-control p_input" placeholder="Wallaby Way 42">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">City</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="city" value="{{ request.form.city }}" required
+                                    class="form-control p_input" placeholder="Sydney">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Zipcode</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="zipcode" value="{{ request.form.zipcode }}" required
+                                    class="form-control p_input" placeholder="66672">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Country</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="country" value="{{ request.form.country }}" required>
+                                    {% for c in countries %}
+                                    <option>{{ c }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

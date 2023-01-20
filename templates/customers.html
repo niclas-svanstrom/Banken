@@ -9,11 +9,15 @@ Du är på sidan {{ page }} av totalt {{ pages }}
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <h4 class="card-title">Kunder</h4>
-            <form method="get">
-                <input type="text" placeholder="Sök" name="q" value="{{ q }}">
+            <h4 class="card-title" style="margin-top: 10px;">Customers:</h4>
+            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search nav-item w-50" method="get"
+                style="padding-left: 250px; margin-bottom: 10px;">
+                <input class="form-control" type="text" placeholder="Search Customers" name="q" value="{{ q }}">
                 <input class="btn" type="submit" value="Sök">
             </form>
+            <a href="/new_customer" class="btn btn-outline-secondary btn-md"
+                style="height: fit-content; margin-left: 150px; margin-top: 10px;">Add new
+                customer</a>
         </div>
         <table class="table">
             <tr>
