@@ -47,7 +47,7 @@ def startpage():
         total.append(len(Customer.query.filter_by(Country=c).all()))
     country_customer={d:t for (d,t) in zip(distinct,total)}
     if 'loggedin' in session:
-        return render_template("start.html",user=user, customers=customers, accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
+        return render_template("start.html", user=user, customers=customers, accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
     else:
         return redirect(url_for('login'))
 
@@ -93,7 +93,6 @@ def customers():
 @app.route("/new_customer", methods=['GET', 'POST'])
 def new_customer():
     error = None
-    added = None
     countries = []
     for country in pycountry.countries:
         countries.append(country.name)
@@ -134,8 +133,9 @@ def new_customer():
 def customer(id):
     accounts = Account.query.filter_by(CustomerId=id).all()
     customer = Customer.query.filter_by(Id=id).first()
+    account_count = len(accounts)
     if 'loggedin' in session:
-        return render_template("customer.html", customer=customer, accounts=accounts)
+        return render_template("customer.html", customer=customer, accounts=accounts, account_count=account_count)
     else:
         return redirect(url_for('login'))
 
@@ -148,23 +148,51 @@ def account(c_id, a_id):
     else:
         return redirect(url_for('login'))
     
-@app.route("/customer/<c_id>/<a_id>/debit")
+@app.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
 def debit(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
+    customer = Customer.query.filter_by(Id=c_id).first()
+    if request.method == 'POST':
+        t = Transaction()
+        a = Account.query.filter_by(AccountType=request.form['account'], CustomerId=c_id).first()
+        a.Balance = a.Balance + int(request.form['sum'])
+        t.Type = "Debit"
+        t.Operation = "Deposit cash"
+        t.Date = datetime.now()
+        t.Amount = request.form['sum']
+        t.NewBalance = a.Balance
+        t.AccountId = a.Id
+        db.session.add(t)
+        db.session.commit()
+        return redirect(url_for('customer', id=c_id))
     if 'loggedin' in session:
-        return render_template("debit.html", account=account, trans=trans, accounts=accounts)
+        return render_template("debit.html", account=account, trans=trans, accounts=accounts, customer=customer)
     else:
         return redirect(url_for('login'))
 
-@app.route("/customer/<c_id>/<a_id>/credit")
+@app.route("/customer/<c_id>/<a_id>/credit", methods=['GET', 'POST'])
 def credit(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
+    customer = Customer.query.filter_by(Id=c_id).first()
+    if request.method == 'POST':
+        t = Transaction()
+        a = Account.query.filter_by(AccountType=request.form['account'], CustomerId=c_id).first()
+        a.Balance = a.Balance - int(request.form['sum'])
+        t.Type = "Debit"
+        t.Operation = "Deposit cash"
+        t.Date = datetime.now()
+        t.Amount = request.form['sum']
+        t.NewBalance = a.Balance
+        t.AccountId = a.Id
+        db.session.add(t)
+        db.session.commit()
+        return redirect(url_for('customer', id=c_id))
     if 'loggedin' in session:
-        return render_template("credit.html", account=account, trans=trans, accounts=accounts)
+        return render_template("credit.html", account=account, trans=trans, accounts=accounts, customer=customer)
     else:
         return redirect(url_for('login'))
 
@@ -173,8 +201,9 @@ def transfer(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
+    customer = Customer.query.filter_by(Id=c_id).first()
     if 'loggedin' in session:
-        return render_template("transfer.html", account=account, trans=trans, accounts=accounts)
+        return render_template("transfer.html", account=account, trans=trans, accounts=accounts, customer=customer)
     else:
         return redirect(url_for('login'))
 

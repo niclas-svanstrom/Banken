@@ -4,6 +4,7 @@
 Startsida
 {% endblock %}
 
+
 {% block content %}
 
 <div class="row">
@@ -70,6 +71,18 @@ Startsida
                         <div class="table-responsive">
                             <table class="table">
                                 <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td class="font-weight-medium">
+                                            Country:
+                                        </td>
+                                        <td class="text-right font-weight-medium">
+                                            Customers:
+                                        </td>
+                                        <td class="text-right font-weight-medium">
+                                            Percentage:
+                                        </td>
+                                    </tr>
                                     {% for c,t in country_customer.items() %}
                                     <tr>
                                         <td></td>
@@ -77,8 +90,7 @@ Startsida
                                             {{ c }}
                                         </td>
                                         <td class="text-right"> {{ t }} </td>
-                                        <td class="text-right font-weight-medium"> {{ t/customers*100 }}%
-                                        </td>
+                                        <td class="text-right"> {{ t/customers*100 }}% </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

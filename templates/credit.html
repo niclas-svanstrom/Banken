@@ -11,25 +11,26 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Credit</h4>
-            <form class="forms-sample">
+            <form class="forms-sample" action="" method="post">
                 <div class="form-group">
                     <label for="exampleSelectGender">From account:</label>
-                    <select class="form-control" id="exampleSelectGender">
-                        <option>Account: {{ account.AccountType }} Balance: {{ account.Balance }}</option>
+                    <select class="form-control" name="account" value="{{ request.form.account }}" required>
+                        <option>{{ account.AccountType }}</option>
                         {% for a in accounts %}
                         {% if a.AccountType != account.AccountType %}
-                        <option>Account: {{ a.AccountType }} Balance: {{ a.Balance }}</option>
+                        <option>{{ a.AccountType }}</option>
                         {% endif %}
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="exampleInputName1">Sum:</label>
-                    <input type="text" class="form-control" id="exampleInputName1" placeholder="Sum">
+                    <input type="number" class="form-control" name="sum" value="{{ request.form.sum }}" required
+                        placeholder="Sum" min="0" max="{{ account.Balance }}">
                 </div>
         </div>
-        <button type="submit" class="btn btn-primary mr-2">Submit</button>
-        <button class="btn btn-dark">Cancel</button>
+        <button type="submit" class="btn btn-primary mr-2" value="Submit">Submit</button>
+        <a href="/customer/{{customer.Id}}" class="btn btn-dark">Cancel</a>
         </form>
     </div>
 </div>
