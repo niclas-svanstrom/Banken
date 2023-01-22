@@ -129,13 +129,39 @@ def new_customer():
     else:
         return redirect(url_for('login'))
 
-@app.route("/customer/<id>")
+@app.route("/customer/<id>", methods=['GET', 'POST'])
 def customer(id):
+    error = None
+    customer = Customer.query.filter_by(Id=id).first()
+    if request.method == 'POST':
+        try:
+            a = Account()
+            a.AccountType = request.form['account_type']
+            a.Created = datetime.now()
+            a.Balance = 0
+            customer.Accounts.append(a)
+            db.session.commit()
+        except:
+            a = Account.query.filter_by(Id = request.form['account_id']).first()
+            if a.Balance > 0:
+                error = 'There is money on this account'
+            else:
+                db.session.delete(a)
+                db.session.commit()
+    accounts = Account.query.filter_by(CustomerId=id).all()
+    account_count = len(accounts)
+    if 'loggedin' in session:
+        return render_template("customer.html", customer=customer, accounts=accounts, account_count=account_count, error=error)
+    else:
+        return redirect(url_for('login'))
+
+@app.route("/new_account/<id>")
+def new_account(id):
     accounts = Account.query.filter_by(CustomerId=id).all()
     customer = Customer.query.filter_by(Id=id).first()
     account_count = len(accounts)
     if 'loggedin' in session:
-        return render_template("customer.html", customer=customer, accounts=accounts, account_count=account_count)
+        return render_template("new_account.html", customer=customer, accounts=accounts, account_count=account_count)
     else:
         return redirect(url_for('login'))
 
@@ -196,14 +222,41 @@ def credit(c_id, a_id):
     else:
         return redirect(url_for('login'))
 
-@app.route("/customer/<c_id>/<a_id>/transfer")
+@app.route("/customer/<c_id>/<a_id>/transfer", methods=['GET', 'POST'])
 def transfer(c_id, a_id):
+    error = None
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
+    if request.method == 'POST':
+        t1 = Transaction()
+        t2 = Transaction()
+        a1 = Account.query.filter_by(AccountType=request.form['from_account'], CustomerId=c_id).first()
+        a2 = Account.query.filter_by(AccountType=request.form['to_account'], CustomerId=c_id).first()
+        if request.form['sum'] > a1.Balance:
+            error = 'Not enough money on account'
+        else:
+            a1.Balance = a1.Balance - int(request.form['sum'])
+            a2.Balance = a2.Balance + int(request.form['sum'])
+            t1.Type = "Credit"
+            t1.Operation = "Transfer"
+            t1.Date = datetime.now()
+            t1.Amount = request.form['sum']
+            t1.NewBalance = a1.Balance
+            t1.AccountId = a1.Id
+            t2.Type = "Debit"
+            t2.Operation = "Transfer"
+            t2.Date = datetime.now()
+            t2.Amount = request.form['sum']
+            t2.NewBalance = a2.Balance
+            t2.AccountId = a2.Id
+            db.session.add(t1)
+            db.session.add(t2)
+            db.session.commit()
+            return redirect(url_for('customer', id=c_id))
     if 'loggedin' in session:
-        return render_template("transfer.html", account=account, trans=trans, accounts=accounts, customer=customer)
+        return render_template("transfer.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
     else:
         return redirect(url_for('login'))
 
