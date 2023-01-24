@@ -180,7 +180,8 @@ Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
                 </select>
             </form>
             {% if error %}
-            <p>{{ error }}</p>
+
+            <body onLoad={{error}}></body>
             {% endif %}
         </div>
         <table class="table">

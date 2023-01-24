@@ -144,7 +144,8 @@ def customer(id):
         except:
             a = Account.query.filter_by(Id = request.form['account_id']).first()
             if a.Balance > 0:
-                error = 'There is money on this account'
+                error = 'no_money_alert()'
+                # error = 'There is money on this account'
             else:
                 db.session.delete(a)
                 db.session.commit()
