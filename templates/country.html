@@ -19,16 +19,16 @@ Alla kunder
                     Stad
                 </th>
             </tr>
-            {% for c in customers %}
+            {% for c in list_of_customers %}
             <tr>
                 <td>
-                    {{ c.GivenName }}
+                    <a href="/customer/{{ c.get_id() }}">{{ c.get_name() }}</a>
                 </td>
                 <td>
-                    {{ c.Surname }}
+                    {{ c.get_lastname() }}
                 </td>
                 <td>
-                    {{ c.Country }}
+                    {{ c.get_money() }}
                 </td>
             </tr>
             {% endfor %}
