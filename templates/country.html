@@ -1,0 +1,40 @@
+{% extends "basetemplate3.html" %}
+
+{% block title %}
+Alla kunder
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <table class="table">
+            <tr>
+                <th>
+                    Namn
+                </th>
+                <th>
+                    Efternamn
+                </th>
+                <th>
+                    Stad
+                </th>
+            </tr>
+            {% for c in customers %}
+            <tr>
+                <td>
+                    {{ c.GivenName }}
+                </td>
+                <td>
+                    {{ c.Surname }}
+                </td>
+                <td>
+                    {{ c.Country }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -51,6 +51,14 @@ def startpage():
     else:
         return redirect(url_for('login'))
 
+@app.route("/country/<c>")
+def country(c):
+    customers= Customer.query.filter_by(Country=c).all()
+    if 'loggedin' in session:
+        return render_template("country.html", customers=customers)
+    else:
+        return redirect(url_for('login'))
+
 @app.route("/customers")
 def customers():
     sortColumn = request.args.get('sortColumn', 'namn')
