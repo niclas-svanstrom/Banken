@@ -10,25 +10,28 @@ Alla kunder
         <table class="table">
             <tr>
                 <th>
-                    Namn
+                    Firstname
                 </th>
                 <th>
-                    Efternamn
+                    Lastname
                 </th>
                 <th>
-                    Stad
+                    Total Balance
                 </th>
             </tr>
             {% for c in list_of_customers %}
             <tr>
                 <td>
-                    <a href="/customer/{{ c.get_id() }}">{{ c.get_name() }}</a>
+                    {{ c.get_name() }}
                 </td>
                 <td>
                     {{ c.get_lastname() }}
                 </td>
                 <td>
                     {{ c.get_money() }}
+                </td>
+                <td>
+                    <a href="/customer/{{ c.get_id() }}" class="btn">More info</a>
                 </td>
             </tr>
             {% endfor %}
