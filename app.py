@@ -296,7 +296,7 @@ def transfer(c_id, a_id):
 
 if __name__  == "__main__":
     with app.app_context():
-        # upgrade()
+        upgrade()
     
         seedData(db)
         app.run(debug=True)
