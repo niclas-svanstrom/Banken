@@ -1,26 +1,24 @@
 from flask_sqlalchemy import SQLAlchemy
 import barnum
 import random
+from flask_security import hash_password
+from flask_security import Security, SQLAlchemyUserDatastore, auth_required, hash_password
+from flask_security.models import fsqla_v3 as fsqla
 from datetime import datetime  
 from datetime import timedelta  
 
 db = SQLAlchemy()
 
-class Users(db.Model):
-    __tablename__= "Users"
-    Id = db.Column(db.Integer, primary_key=True)
-    EmailAddress = db.Column(db.String(50), unique=False, nullable=False)
-    Password = db.Column(db.String(20), unique=False, nullable=False)
-    GivenName = db.Column(db.String(50), unique=False, nullable=False)
-    Surname = db.Column(db.String(50), unique=False, nullable=False)
-    RoleId = db.Column(db.Integer, db.ForeignKey('Role.Id'), nullable=False)
+fsqla.FsModels.set_db_info(db)
 
-class Role(db.Model):
-    __tablename__= "Role"
-    Id = db.Column(db.Integer, primary_key=True)
-    Role = db.Column(db.String(10), unique=False, nullable=False)
-    User_Role = db.relationship('Users', backref='Role',
-     lazy=True)
+class Role(db.Model, fsqla.FsRoleMixin):
+    pass
+
+class User(db.Model, fsqla.FsUserMixin):
+    pass
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+
 
 class Customer(db.Model):
     __tablename__= "Customers"
@@ -64,41 +62,20 @@ class Transaction(db.Model):
 
 
 
-def seedData(db):
-    count = Role.query.count()
-    if count < 2:
-        role1 = Role()
-        role1.Role = "Admin"
-        db.session.add(role1)
-        db.session.commit()
-        role2 = Role()
-        role2.Role = "Cashier"
-        db.session.add(role2)
-        db.session.commit()
-        count += 1
-
-    users = Users.query.all()
-    user1 = ["stefan.holmberg@systementor.se", "Hejsan123#", "Stefan", "Holmberg", 1]
-    user2 = ["stefan.holmberg@nackademin.se", "Hejsan123#", "Stefan", "Holmberg", 2]
-    user3 = ["niclas.svanstrom@hotmail.com", "password", "Niclas", "Svanström", 1]
-    userlist = {1:user1,2:user2,3:user3}
-    current = []
-    for us in users:
-        current.append(us.EmailAddress)
-    for u1 in userlist.values():
-        if u1[0] in current:
-            continue
-        else:
-            user = Users()
-            user.EmailAddress = u1[0]
-            user.Password = u1[1]
-            user.GivenName = u1[2]
-            user.Surname = u1[3]
-            user.RoleId = u1[4]
-            db.session.add(user)
-            db.session.commit()
-
-
+def seedData(app,db):
+    app.security = Security(app, user_datastore)
+    app.security.datastore.db.create_all()
+    if not app.security.datastore.find_role("Admin"):
+        app.security.datastore.create_role(name="Admin")
+    if not app.security.datastore.find_role("Cashier"):
+        app.security.datastore.create_role(name="Cashier")
+    if not app.security.datastore.find_user(email="stefan.holmberg@systementor.se"):
+        app.security.datastore.create_user(email="stefan.holmberg@systementor.se", password=hash_password("password"), roles=["Admin"])
+    if not app.security.datastore.find_user(email="stefan.holmberg@nackademin.se"):
+        app.security.datastore.create_user(email="stefan.holmberg@nackademin.se", password=hash_password("password"), roles=["Cashier"])
+    if not app.security.datastore.find_user(email="niclas.svanstrom@hotmail.com"):
+        app.security.datastore.create_user(email="niclas.svanstrom@hotmail.com", password=hash_password("password"), roles=["Admin","Cashier"])
+    app.security.datastore.db.session.commit()
 
     antal =  Customer.query.count()
     while antal < 500:

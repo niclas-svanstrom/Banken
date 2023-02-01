@@ -11,6 +11,9 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Transfer</h4>
+            {% if error %}
+            <p>{{ error }}</p>
+            {% endif %}
             <form class="forms-sample">
                 <div class="form-group">
                     <label for="exampleSelectGender">From account:</label>

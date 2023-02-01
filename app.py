@@ -1,57 +1,49 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
+from flask_security import roles_accepted, auth_required, logout_user
+import os
 import pycountry
 from datetime import datetime
 
-from model import db, seedData, Customer, Account, Transaction, Users
-
+from model import db, seedData, Customer, Account, Transaction
+from forms import new_customer_form
  
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
-app.config['SECRET_KEY'] = 'super secret key'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'super secret key')
+app.config['SECURITY_PASSWORD_SALT'] = os.environ.get("SECURITY_PASSWORD_SALT", '1241848918926306')
+app.config['REMEMBER_COOKIE_SAMESITE'] = "strict"
+app.config['SESSION_COOKIE_SAMESITE'] = "strict"
 db.app = app
 db.init_app(app)
 migrate = Migrate(app,db)
- 
 
-@app.route("/", methods=['GET', 'POST'])
-def login():
-    error = None
-    users = Users.query.all()
-    if request.method == 'POST':
-        for us in users:
-            if request.form['username'] == us.EmailAddress and request.form['password'] == us.Password:
-                session['loggedin'] = True
-                session['username'] = request.form['username']
-                session['password'] = request.form['password']
-                return redirect(url_for('startpage'))
-        error = 'Invalid Credentials. Please try Again'
-    return render_template("login.html", error=error)
 
-@app.route("/startpage/logout")
+# @app.route("/")
+# def login():
+#     return render_template("login_user.html")
+
+@app.route("/logout")
 def logout():
-    session.pop('loggedin', None)
-    session.pop('username', None)
-    session.pop('password', None)
-    return redirect(url_for('login'))
+    logout_user()
+    return redirect("/")
 
 
-@app.route("/startpage")
+@app.route("/")
+@auth_required()
 def startpage():
     customers=len(Customer.query.all())
-    user = Users.query.filter_by(EmailAddress = session['username']).first()
     distinct = [x.Country for x in Customer.query.with_entities(Customer.Country).distinct()]
     total = []
     for c in distinct:
         total.append(len(Customer.query.filter_by(Country=c).all()))
     country_customer={d:t for (d,t) in zip(distinct,total)}
-    if 'loggedin' in session:
-        return render_template("start.html", user=user, customers=customers, accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
-    else:
-        return redirect(url_for('login'))
+    return render_template("start.html", customers=customers, accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
+
 
 @app.route("/country/<c>")
+@auth_required()
 def country(c):
     class Personas():
         def __init__(self, customer_id, money, name, lastname):
@@ -78,12 +70,11 @@ def country(c):
         list_of_customers.append(persona)
     list_of_customers.sort(reverse=True, key=lambda x: x.get_money())
     list_of_customers = list_of_customers[:10]
-    if 'loggedin' in session:
-        return render_template("country.html", customers=customers, list_of_customers=list_of_customers)
-    else:
-        return redirect(url_for('login'))
+    return render_template("country.html", customers=customers, list_of_customers=list_of_customers)
+
 
 @app.route("/customers")
+@auth_required()
 def customers():
     sortColumn = request.args.get('sortColumn', 'namn')
     sortOrder = request.args.get('sortOrder', 'asc')
@@ -108,8 +99,7 @@ def customers():
             listOfCustomers = listOfCustomers.order_by(Customer.City.desc())
 
     paginationObject = listOfCustomers.paginate(page=page, per_page=25, error_out=False)
-    if 'loggedin' in session:
-        return render_template("customers.html", 
+    return render_template("customers.html", 
                                 listOfCustomers=paginationObject.items, 
                                 pages = paginationObject.pages, 
                                 sortOrder=sortOrder, 
@@ -119,15 +109,16 @@ def customers():
                                 sortColumn=sortColumn, 
                                 q=q 
                                 )
-    else:
-        return redirect(url_for('login'))
+
 
 @app.route("/new_customer", methods=['GET', 'POST'])
+@auth_required()
 def new_customer():
     error = None
     countries = []
     for country in pycountry.countries:
-        countries.append(country.name)
+        c = {country.name:country.name}
+        countries.append(c)
     if request.method == 'POST':
         all_customers = Customer.query.all()
         for cus in all_customers:
@@ -156,12 +147,11 @@ def new_customer():
             db.session.add(c)
             db.session.commit()
             return redirect(url_for('startpage'))
-    if 'loggedin' in session:
-        return render_template("new_customer.html", countries=countries, error=error)
-    else:
-        return redirect(url_for('login'))
+
+    return render_template("new_customer.html", countries=countries, error=error)
 
 @app.route("/customer/<id>", methods=['GET', 'POST'])
+@auth_required()
 def customer(id):
     error = None
     customer = Customer.query.filter_by(Id=id).first()
@@ -183,31 +173,63 @@ def customer(id):
                 db.session.commit()
     accounts = Account.query.filter_by(CustomerId=id).all()
     account_count = len(accounts)
-    if 'loggedin' in session:
-        return render_template("customer.html", customer=customer, accounts=accounts, account_count=account_count, error=error)
-    else:
-        return redirect(url_for('login'))
+    return render_template("customer.html", customer=customer, accounts=accounts, account_count=account_count, error=error)
+
+@app.route("/editcustomer/<int:id>", methods=['GET', 'POST'])
+def editcustomer(id):
+    customer = Customer.query.filter_by(Id=id).first()
+    form = new_customer_form()
+    if form.validate_on_submit():
+        #spara i databas
+        customer.GivenName =  form.givenname.data
+        customer.Surname = form.surname.data
+        customer.Streetaddress = form.streetaddress.data
+        customer.City = form.city.data
+        customer.Zipcode = form.zipcode.data
+        customer.Country = form.country.data
+        customer.CountryCode = pycountry.countries.get(name=form.country.data).alpha_2
+        customer.Birthday = form.birthday.data
+        customer.NationalId = form.nationalid.data
+        customer.TelephoneCountryCode = form.phonecountrycode.data
+        customer.Telephone = form.phonenumber.data
+        customer.EmailAddress = form.email.data
+        customer.verified = True
+        db.session.commit()
+        return redirect("/customers" )
+    if request.method == 'GET':
+        form.givenname.data = customer.GivenName
+        form.surname.data = customer.Surname
+        form.streetaddress.data = customer.Streetaddress
+        form.city.data = customer.City
+        form.zipcode.data = customer.Zipcode
+        form.country.data = customer.Country
+        form.countrycode.data = customer.CountryCode
+        form.birthday.data = customer.Birthday
+        form.nationalid.data = customer.NationalId
+        form.phonecountrycode.data = customer.TelephoneCountryCode
+        form.phonenumber.data = customer.Telephone
+        form.email.data = customer.EmailAddress
+    return render_template("edit_customer.html", formen=form )
 
 @app.route("/new_account/<id>")
+@auth_required()
 def new_account(id):
     accounts = Account.query.filter_by(CustomerId=id).all()
     customer = Customer.query.filter_by(Id=id).first()
     account_count = len(accounts)
-    if 'loggedin' in session:
-        return render_template("new_account.html", customer=customer, accounts=accounts, account_count=account_count)
-    else:
-        return redirect(url_for('login'))
+    return render_template("new_account.html", customer=customer, accounts=accounts, account_count=account_count)
+
 
 @app.route("/customer/<c_id>/<a_id>")
+@auth_required()
 def account(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
-    if 'loggedin' in session:
-        return render_template("account.html", account=account, trans=trans)
-    else:
-        return redirect(url_for('login'))
+    return render_template("account.html", account=account, trans=trans)
+
     
 @app.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
+@auth_required()
 def debit(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
@@ -216,23 +238,26 @@ def debit(c_id, a_id):
     if request.method == 'POST':
         t = Transaction()
         a = Account.query.filter_by(AccountType=request.form['account'], CustomerId=c_id).first()
-        a.Balance = a.Balance + int(request.form['sum'])
-        t.Type = "Debit"
-        t.Operation = "Deposit cash"
-        t.Date = datetime.now()
-        t.Amount = request.form['sum']
-        t.NewBalance = a.Balance
-        t.AccountId = a.Id
-        db.session.add(t)
-        db.session.commit()
-        return redirect(url_for('customer', id=c_id))
-    if 'loggedin' in session:
-        return render_template("debit.html", account=account, trans=trans, accounts=accounts, customer=customer)
-    else:
-        return redirect(url_for('login'))
+        if request.form['sum'] < 0:
+            error = 'Can not be less than 0'
+        else:
+            a.Balance = a.Balance + int(request.form['sum'])
+            t.Type = "Debit"
+            t.Operation = "Deposit cash"
+            t.Date = datetime.now()
+            t.Amount = request.form['sum']
+            t.NewBalance = a.Balance
+            t.AccountId = a.Id
+            db.session.add(t)
+            db.session.commit()
+            return redirect(url_for('customer', id=c_id))
+    return render_template("debit.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
+
 
 @app.route("/customer/<c_id>/<a_id>/credit", methods=['GET', 'POST'])
+@auth_required()
 def credit(c_id, a_id):
+    error = None
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
@@ -240,22 +265,26 @@ def credit(c_id, a_id):
     if request.method == 'POST':
         t = Transaction()
         a = Account.query.filter_by(AccountType=request.form['account'], CustomerId=c_id).first()
-        a.Balance = a.Balance - int(request.form['sum'])
-        t.Type = "Debit"
-        t.Operation = "Deposit cash"
-        t.Date = datetime.now()
-        t.Amount = request.form['sum']
-        t.NewBalance = a.Balance
-        t.AccountId = a.Id
-        db.session.add(t)
-        db.session.commit()
-        return redirect(url_for('customer', id=c_id))
-    if 'loggedin' in session:
-        return render_template("credit.html", account=account, trans=trans, accounts=accounts, customer=customer)
-    else:
-        return redirect(url_for('login'))
+        if request.form['sum'] > a.Balance:
+            error = 'Not enough money on account'
+        elif request.form['sum'] < 0:
+            error = 'Can not be less than 0'
+        else:
+            a.Balance = a.Balance - int(request.form['sum'])
+            t.Type = "Debit"
+            t.Operation = "Deposit cash"
+            t.Date = datetime.now()
+            t.Amount = request.form['sum']
+            t.NewBalance = a.Balance
+            t.AccountId = a.Id
+            db.session.add(t)
+            db.session.commit()
+            return redirect(url_for('customer', id=c_id))
+    return render_template("credit.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
+
 
 @app.route("/customer/<c_id>/<a_id>/transfer", methods=['GET', 'POST'])
+@auth_required()
 def transfer(c_id, a_id):
     error = None
     account = Account.query.filter_by(Id=a_id).first()
@@ -267,7 +296,9 @@ def transfer(c_id, a_id):
         t2 = Transaction()
         a1 = Account.query.filter_by(AccountType=request.form['from_account'], CustomerId=c_id).first()
         a2 = Account.query.filter_by(AccountType=request.form['to_account'], CustomerId=c_id).first()
-        if request.form['sum'] > a1.Balance:
+        if a1 == a2:
+            error = 'Can not transfer the same account'
+        elif request.form['sum'] > a1.Balance:
             error = 'Not enough money on account'
         else:
             a1.Balance = a1.Balance - int(request.form['sum'])
@@ -288,16 +319,14 @@ def transfer(c_id, a_id):
             db.session.add(t2)
             db.session.commit()
             return redirect(url_for('customer', id=c_id))
-    if 'loggedin' in session:
-        return render_template("transfer.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
-    else:
-        return redirect(url_for('login'))
+    return render_template("transfer.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
+
 
 
 if __name__  == "__main__":
     with app.app_context():
         upgrade()
     
-        seedData(db)
+        seedData(app, db)
         app.run(debug=True)
 
