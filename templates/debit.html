@@ -11,25 +11,19 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Debit</h4>
-            {% if error %}
-            <p>{{ error }}</p>
-            {% endif %}
-            <form class="forms-sample" action="" method="post">
+            {% for field, errors in form.errors.items() %}
+            {{ form[field].label }} {{ ', '.join(errors) }}
+            </br>
+            {% endfor %}
+            <form class="forms-sample" method="post">
+                {{ form.csrf_token }}
                 <div class="form-group">
-                    <label for="exampleSelectGender">From account:</label>
-                    <select class="form-control" name="account" value="{{ request.form.account }}" required>
-                        <option>{{ account.AccountType }}</option>
-                        {% for a in accounts %}
-                        {% if a.AccountType != account.AccountType %}
-                        <option>{{ a.AccountType }}</option>
-                        {% endif %}
-                        {% endfor %}
-                    </select>
+                    <label for="exampleSelectGender">To account:</label>
+                    {{ form.account(class="form-control p_input") }}
                 </div>
                 <div class="form-group">
                     <label for="exampleInputName1">Sum:</label>
-                    <input type="number" class="form-control" name="sum" value="{{ request.form.sum }}" required
-                        placeholder="Sum" min="0">
+                    {{ form.amount(class="form-control p_input", min="1") }}
                 </div>
         </div>
         <button type="submit" class="btn btn-primary mr-2" value="Submit">Submit</button>

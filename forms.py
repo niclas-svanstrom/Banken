@@ -13,9 +13,9 @@ for country in pycountry.countries:
     c = (country.name,country.name)
     count.append(c)
 
-def countrycodefunc(inputname):
-    code = pycountry.countries.get(name=inputname).alpha_2
-    return code
+def lower_than_one(form, field):
+    if int(field.data) < 1:
+        raise ValidationError("Can't be lower than 1")
 
 class new_customer_form(FlaskForm):
     givenname = StringField('Firstname:', validators=[validators.DataRequired()])
@@ -32,3 +32,11 @@ class new_customer_form(FlaskForm):
     email = StringField('Emailaddress:', validators=[validators.DataRequired()])
 
 
+class debit_and_credit_form(FlaskForm):
+    amount = IntegerField('Amount:', validators=[validators.DataRequired(), lower_than_one])
+    account = SelectField('Account:', choices=[], validators=[validators.DataRequired()])
+
+class transfer_form(FlaskForm):
+    amount = IntegerField('Amount:', validators=[validators.DataRequired(), lower_than_one])
+    from_account = SelectField('Account:', choices=[], validators=[validators.DataRequired()])
+    to_account = SelectField('Account:', choices=[], validators=[validators.DataRequired()])

@@ -7,7 +7,7 @@ import pycountry
 from datetime import datetime
 
 from model import db, seedData, Customer, Account, Transaction
-from forms import new_customer_form
+from forms import new_customer_form, debit_and_credit_form
  
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
@@ -117,7 +117,7 @@ def new_customer():
     error = None
     countries = []
     for country in pycountry.countries:
-        c = {country.name:country.name}
+        c = country.name
         countries.append(c)
     if request.method == 'POST':
         all_customers = Customer.query.all()
@@ -147,7 +147,6 @@ def new_customer():
             db.session.add(c)
             db.session.commit()
             return redirect(url_for('startpage'))
-
     return render_template("new_customer.html", countries=countries, error=error)
 
 @app.route("/customer/<id>", methods=['GET', 'POST'])
@@ -231,27 +230,28 @@ def account(c_id, a_id):
 @app.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
 @auth_required()
 def debit(c_id, a_id):
-    account = Account.query.filter_by(Id=a_id).first()
+    error = None
+    the_account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
-    trans = Transaction.query.filter_by(AccountId=a_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
-    if request.method == 'POST':
+    form = debit_and_credit_form()
+    form.account.choices = [(a.Id, a.AccountType) for a in accounts]
+    if form.validate_on_submit():
         t = Transaction()
-        a = Account.query.filter_by(AccountType=request.form['account'], CustomerId=c_id).first()
-        if request.form['sum'] < 0:
-            error = 'Can not be less than 0'
-        else:
-            a.Balance = a.Balance + int(request.form['sum'])
-            t.Type = "Debit"
-            t.Operation = "Deposit cash"
-            t.Date = datetime.now()
-            t.Amount = request.form['sum']
-            t.NewBalance = a.Balance
-            t.AccountId = a.Id
-            db.session.add(t)
-            db.session.commit()
-            return redirect(url_for('customer', id=c_id))
-    return render_template("debit.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
+        a = Account.query.filter_by(Id=form.account.data, CustomerId=c_id).first()
+        a.Balance = a.Balance + form.amount.data
+        t.Type = "Debit"
+        t.Operation = "Deposit cash"
+        t.Date = datetime.now()
+        t.Amount = form.amount.data
+        t.NewBalance = a.Balance
+        t.AccountId = a.Id
+        db.session.add(t)
+        db.session.commit()
+        return redirect(url_for('customer', id=c_id))
+    if request.method == 'GET':
+        form.account.data = str(the_account.Id)
+    return render_template("debit.html", customer=customer, error=error, form=form)
 
 
 @app.route("/customer/<c_id>/<a_id>/credit", methods=['GET', 'POST'])
@@ -262,25 +262,24 @@ def credit(c_id, a_id):
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
-    if request.method == 'POST':
+    form = debit_and_credit_form()
+    form.account.choices = [(a.Id, a.AccountType) for a in accounts]
+    if form.validate_on_submit():
         t = Transaction()
-        a = Account.query.filter_by(AccountType=request.form['account'], CustomerId=c_id).first()
-        if request.form['sum'] > a.Balance:
-            error = 'Not enough money on account'
-        elif request.form['sum'] < 0:
-            error = 'Can not be less than 0'
-        else:
-            a.Balance = a.Balance - int(request.form['sum'])
-            t.Type = "Debit"
-            t.Operation = "Deposit cash"
-            t.Date = datetime.now()
-            t.Amount = request.form['sum']
-            t.NewBalance = a.Balance
-            t.AccountId = a.Id
-            db.session.add(t)
-            db.session.commit()
-            return redirect(url_for('customer', id=c_id))
-    return render_template("credit.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
+        a = Account.query.filter_by(Id=form.account.data, CustomerId=c_id).first()
+        a.Balance = a.Balance - form.amount.data
+        t.Type = "Debit"
+        t.Operation = "Deposit cash"
+        t.Date = datetime.now()
+        t.Amount = form.amount.data
+        t.NewBalance = a.Balance
+        t.AccountId = a.Id
+        db.session.add(t)
+        db.session.commit()
+        return redirect(url_for('customer', id=c_id))
+    if request.method == 'GET':
+        form.account.data = str(account.Id)
+    return render_template("credit.html", customer=customer, error=error, form=form)
 
 
 @app.route("/customer/<c_id>/<a_id>/transfer", methods=['GET', 'POST'])
