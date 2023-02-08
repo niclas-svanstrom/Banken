@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
-from flask_security import roles_accepted, auth_required, logout_user
+from flask_security import roles_accepted, auth_required, logout_user, hash_password
+from flask_login import current_user
 import os
 import pycountry
 from datetime import datetime
 
-from model import db, seedData, Customer, Account, Transaction
-from forms import new_customer_form, debit_and_credit_form
+from model import db, seedData, Customer, Account, Transaction, User, user_datastore, Security, Role
+from forms import new_customer_form, debit_and_credit_form, transfer_form, new_user_form
  
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
@@ -15,6 +16,7 @@ app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'super secret key')
 app.config['SECURITY_PASSWORD_SALT'] = os.environ.get("SECURITY_PASSWORD_SALT", '1241848918926306')
 app.config['REMEMBER_COOKIE_SAMESITE'] = "strict"
 app.config['SESSION_COOKIE_SAMESITE'] = "strict"
+app.config['SECURITY_REGISTERABLE'] = True
 db.app = app
 db.init_app(app)
 migrate = Migrate(app,db)
@@ -290,35 +292,63 @@ def transfer(c_id, a_id):
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
-    if request.method == 'POST':
+    form = transfer_form()
+    form.from_account.choices = [(a.Id, a.AccountType) for a in accounts]
+    form.to_account.choices = [(a.Id, a.AccountType) for a in accounts]
+    if form.validate_on_submit():
         t1 = Transaction()
         t2 = Transaction()
-        a1 = Account.query.filter_by(AccountType=request.form['from_account'], CustomerId=c_id).first()
-        a2 = Account.query.filter_by(AccountType=request.form['to_account'], CustomerId=c_id).first()
+        a1 = Account.query.filter_by(Id=form.from_account.data, CustomerId=c_id).first()
+        a2 = Account.query.filter_by(Id=form.to_account.data, CustomerId=c_id).first()
         if a1 == a2:
-            error = 'Can not transfer the same account'
-        elif request.form['sum'] > a1.Balance:
-            error = 'Not enough money on account'
+            form.from_account.errors += ("Can't transfer to the same account",)
+        elif form.amount.data > a1.Balance:
+            form.amount.errors += ('Not enough money on account',)
         else:
-            a1.Balance = a1.Balance - int(request.form['sum'])
-            a2.Balance = a2.Balance + int(request.form['sum'])
+            a1.Balance = a1.Balance - form.amount.data
+            a2.Balance = a2.Balance + form.amount.data
             t1.Type = "Credit"
             t1.Operation = "Transfer"
             t1.Date = datetime.now()
-            t1.Amount = request.form['sum']
+            t1.Amount = form.amount.data
             t1.NewBalance = a1.Balance
             t1.AccountId = a1.Id
             t2.Type = "Debit"
             t2.Operation = "Transfer"
             t2.Date = datetime.now()
-            t2.Amount = request.form['sum']
+            t2.Amount = form.amount.data
             t2.NewBalance = a2.Balance
             t2.AccountId = a2.Id
             db.session.add(t1)
             db.session.add(t2)
             db.session.commit()
             return redirect(url_for('customer', id=c_id))
-    return render_template("transfer.html", account=account, trans=trans, accounts=accounts, customer=customer, error=error)
+    return render_template("transfer.html", customer=customer, error=error, form=form)
+
+@app.route("/adminpage", methods=['GET', 'POST'])
+@roles_accepted("Admin")
+def adminpage():
+    listOfUsers = [u for u in User.query.all() if u.email != current_user.email]
+    if request.method == 'POST':
+        app.security.datastore.delete_user(request.form['user_id'])
+        app.security.datastore.db.session.commit()
+        return redirect(url_for('adminpage'))
+    return render_template("adminpage.html", listOfUsers=listOfUsers)
+
+@app.route("/register", methods=['GET', 'POST'])
+@roles_accepted("Admin")
+def register():
+    form = new_user_form()
+    roles = Role.query.all()
+    form.role.choices = [(r.name, r.name) for r in roles]
+    if form.validate_on_submit():
+        if not app.security.datastore.find_user(email=form.email.data):
+            app.security.datastore.create_user(email=form.email.data, password=hash_password(form.password.data), roles=[form.role.data])
+            app.security.datastore.db.session.commit()
+            return redirect(url_for('adminpage'))
+        else:
+            form.email.errors += ('Email is already in use',)
+    return render_template("new_user.html", form=form)
 
 
 

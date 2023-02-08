@@ -48,6 +48,15 @@
                         </span>
                         <span class="menu-title">Customers</span>
                     </a>
+                    {% if current_user.has_role('Admin') %}
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ url_for('adminpage') }}">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-account"></i>
+                        </span>
+                        <span class="menu-title">Admin</span>
+                    </a>
+                    {% endif %}
 
             </ul>
         </nav>}

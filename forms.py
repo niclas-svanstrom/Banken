@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import Form, BooleanField, StringField, PasswordField, validators, ValidationError
-from wtforms.fields import IntegerField, SelectField, DateField, HiddenField
+from wtforms.fields import IntegerField, SelectField, DateField, HiddenField, EmailField
 import pycountry
 from datetime import datetime
 
@@ -40,3 +40,8 @@ class transfer_form(FlaskForm):
     amount = IntegerField('Amount:', validators=[validators.DataRequired(), lower_than_one])
     from_account = SelectField('Account:', choices=[], validators=[validators.DataRequired()])
     to_account = SelectField('Account:', choices=[], validators=[validators.DataRequired()])
+
+class new_user_form(FlaskForm):
+    email = EmailField('Email:', validators=[validators.DataRequired()])
+    password = PasswordField('Password:', validators=[validators.DataRequired()])
+    role = SelectField('Role', choices=[], validators=[validators.DataRequired()])

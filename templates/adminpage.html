@@ -1,0 +1,53 @@
+{% extends "basetemplate3.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <h4 class="card-title" style="margin-top: 10px;">Users:</h4>
+            <a type="button" href="register" class="btn btn-outline-secondary btn-md"
+                style="height: fit-content; margin-left: 150px;">Add new
+                User</a>
+        </div>
+        <table class="table">
+            <tr>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Role
+                </th>
+            </tr>
+            {% for u in listOfUsers %}
+            <tr>
+                <td>
+                    {{ u.email }}
+                </td>
+                <td>
+                    {% for r in u.roles %}
+                    {{ r.name }}
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="" class="btn">Edit</a>
+                </td>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" name="user_id" value="{{ u.id }}" />
+                        <button class="btn btn-outline-secondary btn-md" type="submit" value="submit">Delete
+                            User</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}
