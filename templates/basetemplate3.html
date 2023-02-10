@@ -26,7 +26,12 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='/assets/css/style.css') }}" <!-- End layout styles -->
     <link rel="stylesheet" href="{{ url_for('static',filename='/assets/images/favicon.png') }}" </head>
 
+
 <body>
+    {% for message in get_flashed_messages() %}
+
+    <body onLoad="alert_message('{{ message }}')"></body>
+    {% endfor %}
     <div class="container-scroller">
         <!-- partial:partials/_sidebar.html -->
         <nav class="sidebar sidebar-offcanvas" id="sidebar">

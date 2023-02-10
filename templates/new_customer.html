@@ -10,19 +10,22 @@
     <div class="card">
         <div class="card-body">
             <h2 class="card-title" style="text-align: center;">Ny kund:</h2>
-            {% if error %}
-            <p>{{ error }}</p>
-            {% endif %}
-            <form action="" method="post">
+            {% for field, errors in form.errors.items() %}
+            {{ form[field].label }} {{ ', '.join(errors) }}
+            </br>
+            {% endfor %}
+            <form method="post">
+                {{ form.csrf_token }}
                 <p class="card-description"> Personal info </p>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">First Name</label>
                             <div class="col-sm-9">
-                                <input type="text" name="first_name" value="{{ request.form.first_name }}" required
+                                {{ form.givenname(class="form-control p_input", placeholder="Peter") }}
+                                <!-- <input type="text" name="first_name" value="{{ request.form.first_name }}" required
                                     class="form-control p_input" placeholder="Peter" pattern="[A-Za-z]+" maxlength="30"
-                                    minlength="2">
+                                    minlength="2"> -->
                             </div>
                         </div>
                     </div>
@@ -30,9 +33,10 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Last Name</label>
                             <div class="col-sm-9">
-                                <input type="text" name="last_name" value="{{ request.form.last_name }}" required
+                                {{ form.surname(class="form-control p_input", placeholder="Sherman") }}
+                                <!-- <input type="text" name="last_name" value="{{ request.form.last_name }}" required
                                     class="form-control p_input" placeholder="Sherman" pattern="[A-Öa-ö]+"
-                                    maxlength="30" minlength="2">
+                                    maxlength="30" minlength="2"> -->
                             </div>
                         </div>
                     </div>
@@ -42,8 +46,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Date of Birth</label>
                             <div class="col-sm-9">
-                                <input type="date" name="birth" value="{{ request.form.birth }}" required
-                                    class="form-control p_input">
+                                {{ form.birthday(class="form-control p_input") }}
+                                <!-- <input type="date" name="birth" value="{{ request.form.birth }}" required
+                                    class="form-control p_input"> -->
                             </div>
                         </div>
                     </div>
@@ -51,9 +56,10 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">National ID</label>
                             <div class="col-sm-9">
-                                <input type="text" name="national_id" value="{{ request.form.national_id }}" required
+                                {{ form.nationalid(class="form-control p_input", placeholder="19690227-4728") }}
+                                <!-- <input type="text" name="national_id" value="{{ request.form.national_id }}" required
                                     class="form-control p_input" placeholder="19690227-4728"
-                                    pattern="[0-9]{8}-[0-9]{4}">
+                                    pattern="[0-9]{8}-[0-9]{4}"> -->
                             </div>
                         </div>
                     </div>
@@ -63,8 +69,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Phone country code</label>
                             <div class="col-sm-9">
-                                <input type="number" name="phone_code" value="{{ request.form.phone_code }}" required
-                                    class="form-control p_input" placeholder="61" min="1" max="99">
+                                {{ form.phonecountrycode(class="form-control p_input", placeholder="61") }}
+                                <!-- <input type="number" name="phone_code" value="{{ request.form.phone_code }}" required
+                                    class="form-control p_input" placeholder="61" min="1" max="99"> -->
                             </div>
                         </div>
                     </div>
@@ -72,8 +79,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Phonenumber</label>
                             <div class="col-sm-9">
-                                <input type="text" name="phone_number" value="{{ request.form.phone_number }}" required
-                                    class="form-control p_input" placeholder="8012636123" pattern="[0-9]{10}">
+                                {{ form.phonenumber(class="form-control p_input", placeholder="8012636123") }}
+                                <!-- <input type="text" name="phone_number" value="{{ request.form.phone_number }}" required
+                                    class="form-control p_input" placeholder="8012636123" pattern="[0-9]{10}"> -->
                             </div>
                         </div>
                     </div>
@@ -83,8 +91,10 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Emailaddress</label>
                             <div class="col-sm-9">
-                                <input type="email" name="email" value="{{ request.form.email }}" required
-                                    class="form-control p_input" placeholder="P-Sherman@findingnemo.com">
+                                {{ form.email(class="form-control p_input", placeholder="P-Sherman@findingnemo.com")
+                                }}
+                                <!-- <input type="email" name="email" value="{{ request.form.email }}" required
+                                    class="form-control p_input" placeholder="P-Sherman@findingnemo.com"> -->
                             </div>
                         </div>
                     </div>
@@ -95,9 +105,10 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Address</label>
                             <div class="col-sm-9">
-                                <input type="text" name="address" value="{{ request.form.address }}" required
+                                {{ form.streetaddress(class="form-control p_input", placeholder="Wallaby Way 42") }}
+                                <!-- <input type="text" name="address" value="{{ request.form.address }}" required
                                     class="form-control p_input" placeholder="Wallaby Way 42"
-                                    pattern="[A-Öa-ö]+ [0-9]+">
+                                    pattern="[A-Öa-ö]+ [0-9]+"> -->
                             </div>
                         </div>
                     </div>
@@ -105,8 +116,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">City</label>
                             <div class="col-sm-9">
-                                <input type="text" name="city" value="{{ request.form.city }}" required
-                                    class="form-control p_input" placeholder="Sydney" pattern="[A-Öa-ö]+" minlength="2">
+                                {{ form.city(class="form-control p_input", placeholder="Sydney") }}
+                                <!-- <input type="text" name="city" value="{{ request.form.city }}" required
+                                    class="form-control p_input" placeholder="Sydney" pattern="[A-Öa-ö]+" minlength="2"> -->
                             </div>
                         </div>
                     </div>
@@ -116,8 +128,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Zipcode</label>
                             <div class="col-sm-9">
-                                <input type="text" name="zipcode" value="{{ request.form.zipcode }}" required
-                                    class="form-control p_input" placeholder="66672" pattern="[0-9]{5}">
+                                {{ form.zipcode(class="form-control p_input", placeholder="66672") }}
+                                <!-- <input type="text" name="zipcode" value="{{ request.form.zipcode }}" required
+                                    class="form-control p_input" placeholder="66672" pattern="[0-9]{5}"> -->
                             </div>
                         </div>
                     </div>
@@ -126,11 +139,12 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Country</label>
                             <div class="col-sm-9">
-                                <select class="form-control" name="country" value="{{ request.form.country }}" required>
+                                {{ form.country(class="form-control p_input") }}
+                                <!-- <select class="form-control" name="country" value="{{ request.form.country }}" required>
                                     {% for c in countries %}
                                     <option>{{ c }}</option>
                                     {% endfor %}
-                                </select>
+                                </select> -->
                             </div>
                         </div>
                     </div>

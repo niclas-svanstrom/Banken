@@ -15,7 +15,7 @@ for country in pycountry.countries:
 
 def lower_than_one(form, field):
     if int(field.data) < 1:
-        raise ValidationError("Can't be lower than 1")
+        raise ValidationError('Can not be lower than 1')
 
 class new_customer_form(FlaskForm):
     givenname = StringField('Firstname:', validators=[validators.DataRequired()])

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 from flask_security import roles_accepted, auth_required, logout_user, hash_password
@@ -116,40 +116,37 @@ def customers():
 @app.route("/new_customer", methods=['GET', 'POST'])
 @auth_required()
 def new_customer():
-    error = None
-    countries = []
-    for country in pycountry.countries:
-        c = country.name
-        countries.append(c)
-    if request.method == 'POST':
+    form = new_customer_form()
+    if form.validate_on_submit():
+        #spara i databas
         all_customers = Customer.query.all()
         for cus in all_customers:
-            if request.form['national_id'] == cus.NationalId:
-                error = 'National ID already exists'
-        if error == None:
-            c = Customer()
-            a = Account()
-            c.GivenName =  request.form['first_name']
-            c.Surname = request.form['last_name']
-            c.Streetaddress = request.form['address']
-            c.City = request.form['city']
-            c.Zipcode = request.form['zipcode']
-            c.Country = request.form['country']
-            c.CountryCode = pycountry.countries.get(name=request.form['country']).alpha_2
-            c.Birthday = request.form['birth']
-            c.NationalId = request.form['national_id']
-            c.TelephoneCountryCode = request.form['phone_code']
-            c.Telephone = request.form['phone_number']
-            c.EmailAddress = request.form['email']
-            start = datetime.now()
-            a.AccountType = "Personal"
-            a.Created = start
-            a.Balance = 0
-            c.Accounts.append(a)
-            db.session.add(c)
+            if form.nationalid.data == cus.NationalId:
+                form.nationalid.errors += ('National ID already exists',)
+        if len(form.nationalid.errors) == 0:
+            customer = Customer()
+            account = Account()
+            customer.GivenName =  form.givenname.data
+            customer.Surname = form.surname.data
+            customer.Streetaddress = form.streetaddress.data
+            customer.City = form.city.data
+            customer.Zipcode = form.zipcode.data
+            customer.Country = form.country.data
+            customer.CountryCode = pycountry.countries.get(name=form.country.data).alpha_2
+            customer.Birthday = form.birthday.data
+            customer.NationalId = form.nationalid.data
+            customer.TelephoneCountryCode = form.phonecountrycode.data
+            customer.Telephone = form.phonenumber.data
+            customer.EmailAddress = form.email.data
+            account.AccountType = "Personal"
+            account.Created = datetime.now()
+            account.Balance = 0
+            customer.Accounts.append(account)
+            db.session.add(customer)
             db.session.commit()
-            return redirect(url_for('startpage'))
-    return render_template("new_customer.html", countries=countries, error=error)
+            flash('Customer Created')
+            return redirect("/customers" )
+    return render_template("new_customer.html", form=form)
 
 @app.route("/customer/<id>", methods=['GET', 'POST'])
 @auth_required()
@@ -164,6 +161,7 @@ def customer(id):
             a.Balance = 0
             customer.Accounts.append(a)
             db.session.commit()
+            flash('Account Created')
         except:
             a = Account.query.filter_by(Id = request.form['account_id']).first()
             if a.Balance > 0:
@@ -172,11 +170,13 @@ def customer(id):
             else:
                 db.session.delete(a)
                 db.session.commit()
+                flash('Account Deleted')
     accounts = Account.query.filter_by(CustomerId=id).all()
     account_count = len(accounts)
     return render_template("customer.html", customer=customer, accounts=accounts, account_count=account_count, error=error)
 
 @app.route("/editcustomer/<int:id>", methods=['GET', 'POST'])
+@auth_required()
 def editcustomer(id):
     customer = Customer.query.filter_by(Id=id).first()
     form = new_customer_form()
@@ -196,6 +196,7 @@ def editcustomer(id):
         customer.EmailAddress = form.email.data
         customer.verified = True
         db.session.commit()
+        flash('Customer Edited')
         return redirect("/customers" )
     if request.method == 'GET':
         form.givenname.data = customer.GivenName
@@ -211,14 +212,6 @@ def editcustomer(id):
         form.phonenumber.data = customer.Telephone
         form.email.data = customer.EmailAddress
     return render_template("edit_customer.html", formen=form )
-
-@app.route("/new_account/<id>")
-@auth_required()
-def new_account(id):
-    accounts = Account.query.filter_by(CustomerId=id).all()
-    customer = Customer.query.filter_by(Id=id).first()
-    account_count = len(accounts)
-    return render_template("new_account.html", customer=customer, accounts=accounts, account_count=account_count)
 
 
 @app.route("/customer/<c_id>/<a_id>")
@@ -250,6 +243,7 @@ def debit(c_id, a_id):
         t.AccountId = a.Id
         db.session.add(t)
         db.session.commit()
+        flash('Debit Completed')
         return redirect(url_for('customer', id=c_id))
     if request.method == 'GET':
         form.account.data = str(the_account.Id)
@@ -262,23 +256,26 @@ def credit(c_id, a_id):
     error = None
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
-    trans = Transaction.query.filter_by(AccountId=a_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
     form = debit_and_credit_form()
     form.account.choices = [(a.Id, a.AccountType) for a in accounts]
     if form.validate_on_submit():
-        t = Transaction()
-        a = Account.query.filter_by(Id=form.account.data, CustomerId=c_id).first()
-        a.Balance = a.Balance - form.amount.data
-        t.Type = "Debit"
-        t.Operation = "Deposit cash"
-        t.Date = datetime.now()
-        t.Amount = form.amount.data
-        t.NewBalance = a.Balance
-        t.AccountId = a.Id
-        db.session.add(t)
-        db.session.commit()
-        return redirect(url_for('customer', id=c_id))
+        if form.amount.data > account.Balance:
+            form.amount.errors += ('Not enough money on account',)
+        else:
+            t = Transaction()
+            a = Account.query.filter_by(Id=form.account.data, CustomerId=c_id).first()
+            a.Balance = a.Balance - form.amount.data
+            t.Type = "Credit"
+            t.Operation = "Bank withdrawal"
+            t.Date = datetime.now()
+            t.Amount = form.amount.data
+            t.NewBalance = a.Balance
+            t.AccountId = a.Id
+            db.session.add(t)
+            db.session.commit()
+            flash('Credit Completed')
+            return redirect(url_for('customer', id=c_id))
     if request.method == 'GET':
         form.account.data = str(account.Id)
     return render_template("credit.html", customer=customer, error=error, form=form)
@@ -288,9 +285,7 @@ def credit(c_id, a_id):
 @auth_required()
 def transfer(c_id, a_id):
     error = None
-    account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
-    trans = Transaction.query.filter_by(AccountId=a_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
     form = transfer_form()
     form.from_account.choices = [(a.Id, a.AccountType) for a in accounts]
@@ -322,20 +317,24 @@ def transfer(c_id, a_id):
             db.session.add(t1)
             db.session.add(t2)
             db.session.commit()
+            flash('Transfer Completed')
             return redirect(url_for('customer', id=c_id))
     return render_template("transfer.html", customer=customer, error=error, form=form)
 
 @app.route("/adminpage", methods=['GET', 'POST'])
+@auth_required()
 @roles_accepted("Admin")
 def adminpage():
     listOfUsers = [u for u in User.query.all() if u.email != current_user.email]
     if request.method == 'POST':
-        app.security.datastore.delete_user(request.form['user_id'])
+        app.security.datastore.delete_user(app.security.datastore.find_user(email=request.form['user']))
         app.security.datastore.db.session.commit()
+        flash('User Deleted')
         return redirect(url_for('adminpage'))
     return render_template("adminpage.html", listOfUsers=listOfUsers)
 
 @app.route("/register", methods=['GET', 'POST'])
+@auth_required()
 @roles_accepted("Admin")
 def register():
     form = new_user_form()
@@ -345,6 +344,7 @@ def register():
         if not app.security.datastore.find_user(email=form.email.data):
             app.security.datastore.create_user(email=form.email.data, password=hash_password(form.password.data), roles=[form.role.data])
             app.security.datastore.db.session.commit()
+            flash('User Registered')
             return redirect(url_for('adminpage'))
         else:
             form.email.errors += ('Email is already in use',)

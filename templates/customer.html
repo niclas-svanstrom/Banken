@@ -5,19 +5,6 @@ Kundsida {{ customer.Surname }}, {{ customer.GivenName }}
 {% endblock %}
 
 
-{{ customer.GivenName }}
-{{ customer.Surname }}
-{{ customer.Streetaddress }}
-{{ customer.City }}
-{{ customer.Zipcode }}
-{{ customer.Country }}
-{{ customer.CountryCode }}
-{{ customer.Birthday }}
-{{ customer.NationalId }}
-{{ customer.TelephoneCountryCode }}
-{{ customer.Telephone }}
-{{ customer.EmailAddress }}
-
 
 {% block content %}
 <a href="/editcustomer/{{ customer.Id }}" class="btn">Edit</a>
