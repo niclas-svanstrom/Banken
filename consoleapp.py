@@ -3,11 +3,22 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, upgrade
 from model import Transaction, Customer, Account
+from flask_mail import Mail, Message
 from app import app, db
 import sys
 import os
 
 migrate = Migrate(app,db)
+
+#min setup på mailtrap
+app.config['MAIL_SERVER']='sandbox.smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = '58d9c9a416909a'
+app.config['MAIL_PASSWORD'] = '67e4ae70d0ef4b'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+
+mail = Mail(app)
 
 
 def last_run(): 
@@ -21,7 +32,7 @@ def last_run():
     
 def date_to_file():
     with open("lastrundate.txt", "w") as file:
-        file.write(str(date.today()))
+        file.write(str(datetime.now()))
 
 def write_to_file(text):
  with open("sendtoemail.txt", "a") as file:
@@ -33,16 +44,20 @@ def open_new_file():
 
 if __name__  == "__main__":
     with app.app_context():
+        # msg = Message('Shady Transactions', sender = '58d9c9a416909a', recipients = ['sweden@testbanken.se'])
+        # msg.body = "This is the email body"
+        # mail.send(msg)
+
+
         upgrade()
-        now = date.today()
-        # if last_run() == str(now):
-        #     sys.exit()
+        now = datetime.now()
 
         start = now - timedelta(days = 3)
         then = last_run()
-        print(start)
         distinct = [x.Country for x in Customer.query.with_entities(Customer.Country).distinct()]
         for co in distinct:
+            msg = Message('Shady Transactions', sender = '58d9c9a416909a', recipients = [f'{co}@testbanken.se'])
+            msg.body = ""
             open_new_file()
             for cu in Customer.query.filter_by(Country=co).all():
                 for a in Account.query.filter_by(CustomerId=cu.Id).all():
@@ -57,24 +72,26 @@ if __name__  == "__main__":
                             transa.append(f"Account: {tr.AccountId} Transaction: {tr.Id} Amount:{tr.Amount}")
                     if summa > 23000 or len(big_amount) != 0:
                         write_to_file(f"Customer: {cu.Id}\n")
+                        msg.body += f"Customer: {cu.Id}\n"
                     if len(big_amount) != 0:
                         for big in big_amount:
                             write_to_file("High Transaction:\n" + big + "\n")
+                            msg.body += "High Transaction:\n" + big + "\n"
                     if summa > 23000:
-                        write_to_file("Transactions over 23000 within 3days:\n")
+                        write_to_file("Transactions over 23000 within 3 days:\n")
+                        msg.body += "Transactions over 23000 within 3 days:\n"
                         for tran in transa:
                             write_to_file(tran + "\n" )
+                            msg.body += f"{tran}\n"
                         write_to_file("Total:" + str(summa) + "\n")
+                        msg.body += "Total:" + str(summa) + "\n"
             if os.path.getsize('sendtoemail.txt') == 0:
                 print(f"inget i: {co}")
             else:
+                mail.send(msg)
                 with open("sendtoemail.txt", "r") as file:
                     for rows in file:
                         print(rows.replace("\n", ""))
-
-        # for t in Transaction.query.all():
-        #     if str(t.Date) > "2017-01-01":
-        #         print(f"{t.Type} {t.Date} {t.AccountId}")
 
 
         date_to_file()
