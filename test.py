@@ -1,30 +1,39 @@
-class Personas():
-    def __init__(self, customer_id, money):
-        self.__customer_id = customer_id
-        self.__money = money
-    def get_money(self):
-        return self.__money
-    def __repr__(self):
-        return f'{self.__customer_id} {self.__money}'
+import re
 
-persona = [
-        Personas(2, 2000),
-        Personas(1, 5000),
-        Personas(3, 3000),
-        Personas(4, 5000),
-        Personas(5, 2500),
-        Personas(6, 3000),
-        Personas(7, 6000),
-        Personas(8, 1000),
-        Personas(9, 7000),
-        Personas(10, 6500),
-        Personas(11, 3400),
-        Personas(12, 2000),
-    ]
+# class Personas():
+#     def __init__(self, customer_id, money):
+#         self.__customer_id = customer_id
+#         self.__money = money
+#     def get_money(self):
+#         return self.__money
+#     def __repr__(self):
+#         return f'{self.__customer_id} {self.__money}'
 
-persona.sort(reverse=True, key=lambda x: x.get_money())
+# persona = [
+#         Personas(2, 2000),
+#         Personas(1, 5000),
+#         Personas(3, 3000),
+#         Personas(4, 5000),
+#         Personas(5, 2500),
+#         Personas(6, 3000),
+#         Personas(7, 6000),
+#         Personas(8, 1000),
+#         Personas(9, 7000),
+#         Personas(10, 6500),
+#         Personas(11, 3400),
+#         Personas(12, 2000),
+#     ]
 
-persona = persona[:5]
+# persona.sort(reverse=True, key=lambda x: x.get_money())
+
+# persona = persona[:5]
  
-    # output: [{Joe, Finance, 25}, {John, IT, 28}, {Sam, Banking, 20}]
-print(persona)
+#     # output: [{Joe, Finance, 25}, {John, IT, 28}, {Sam, Banking, 20}]
+# print(persona)
+
+def address(address):
+    regex = re.compile(r'([A-Za-z0-9]{2,})+" "+(0-9]{1,})+')
+    if not re.fullmatch(regex, address):
+        return print("Nepp")
+    
+address("Nee 1")
