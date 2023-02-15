@@ -31,9 +31,12 @@ import re
 #     # output: [{Joe, Finance, 25}, {John, IT, 28}, {Sam, Banking, 20}]
 # print(persona)
 
-def address(address):
-    regex = re.compile(r'([A-Za-z0-9]{2,})+" "+(0-9]{1,})+')
-    if not re.fullmatch(regex, address):
-        return print("Nepp")
+def id(idt):
+    regex = re.compile(r'([0-9]{8,8}+[-])+([0-9]{4,4})+')
+    if not re.fullmatch(regex, idt):
+        return print(f"nepp")
+
     
-address("Nee 1")
+id("19940266-1231")
+
+
