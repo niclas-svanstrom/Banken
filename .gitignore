@@ -1,2 +1,7 @@
 /env
 /__pycache__
+
+areas/admin/__pycache__
+areas/api/__pycache__
+areas/site/__pycache__
+areas/customer/__pycache__
