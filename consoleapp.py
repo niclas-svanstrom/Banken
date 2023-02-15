@@ -1,22 +1,12 @@
-from datetime import date, datetime, timedelta
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, upgrade
+from datetime import datetime, timedelta
+from flask_migrate import upgrade
 from model import Transaction, Customer, Account
 from flask_mail import Mail, Message
-from app import app, db
-import sys
+from app import app
 import os
 
-migrate = Migrate(app,db)
 
-#min setup på mailtrap
-app.config['MAIL_SERVER']='sandbox.smtp.mailtrap.io'
-app.config['MAIL_PORT'] = 2525
-app.config['MAIL_USERNAME'] = '58d9c9a416909a'
-app.config['MAIL_PASSWORD'] = '67e4ae70d0ef4b'
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
+app.config.from_object('config.ConfigDebug')
 
 mail = Mail(app)
 

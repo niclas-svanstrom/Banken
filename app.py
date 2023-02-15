@@ -9,12 +9,8 @@ from areas.api.apiPage import apiBluePrint
 from model import db, seedData
  
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY", 'super secret key')
-app.config['SECURITY_PASSWORD_SALT'] = os.environ.get("SECURITY_PASSWORD_SALT", '1241848918926306')
-app.config['REMEMBER_COOKIE_SAMESITE'] = "strict"
-app.config['SESSION_COOKIE_SAMESITE'] = "strict"
-app.config['SECURITY_REGISTERABLE'] = True
+app.config.from_object('config.ConfigDebug')
+
 db.app = app
 db.init_app(app)
 migrate = Migrate(app,db)
