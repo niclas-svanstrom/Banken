@@ -5,3 +5,4 @@ function no_money_alert() {
 function alert_message(msg) {
     alert(msg)
 }
+
