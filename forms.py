@@ -19,15 +19,9 @@ def lower_than_one(form, field):
         raise ValidationError('Can not be lower than 1')
     
 def valid_zipcode(form, field):
-    zip_code = field.data.strip(" ")
-    if zip_code.isdigit():
-        if zip_code < 0:
-            raise ValidationError("Zipcode can't be negative number")
-        if len(zip_code) > 10:
-            raise ValidationError("Zipcode can't be more than 10 digits")
-    else:
-        raise ValidationError('Zipcode must be numbers only')
-    
+    if field.data < 0:
+        raise ValidationError("Zipcode can not be negative number")
+
 def valid_adress(form, field):
     regex = re.compile(r'([A-Öa-ö0-9]+[\s])*([A-Äa-ö0-9]+[\s])+([0-9]{1,})+')
     regex2 = re.compile(r'([0-9]{1,}+[\s])+([A-Öa-ö0-9]+[\s])*([A-Äa-ö0-9])+')
@@ -38,7 +32,7 @@ def valid_phonenumber(form, field):
     phonenumber = field.data
     if phonenumber[0] == "+":
         raise ValidationError('Only phonenumber not with the phonecountrycode')
-    elif not phonenumber.strip(" ").isdigit() or not phonenumber.strip("-").isdigit():
+    elif not (phonenumber.strip(" ").isdigit() or phonenumber.strip("-").isdigit()):
         raise ValidationError('Only digits in phonenumber except for -')
     
 def valid_nationalid(form, field):

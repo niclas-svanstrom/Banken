@@ -5,7 +5,6 @@ Alla kunder
 {% endblock %}
 
 {% block content %}
-Du är på sidan {{ page }} av totalt {{ pages }}
 <div class="card">
     <div class="card-body">
         <div class="row">
@@ -22,7 +21,10 @@ Du är på sidan {{ page }} av totalt {{ pages }}
         <table class="table">
             <tr>
                 <th>
-                    Namn
+                    Customer ID
+                </th>
+                <th>
+                    Firstname
                     <a href="/customers?sortColumn=namn&sortOrder=asc&q={{ q }}">
                         <i class='mdi mdi-arrow-up'></i>
                     </a>
@@ -31,10 +33,16 @@ Du är på sidan {{ page }} av totalt {{ pages }}
                     </a>
                 </th>
                 <th>
-                    Efternamn
+                    Lastname
                 </th>
                 <th>
-                    Stad
+                    National ID
+                </th>
+                <th>
+                    Address
+                </th>
+                <th>
+                    City
                     <a href="/customers?sortColumn=city&sortOrder=asc&q={{ q }}">
                         <i class='mdi mdi-arrow-up'></i>
                     </a>
@@ -46,10 +54,19 @@ Du är på sidan {{ page }} av totalt {{ pages }}
             {% for c in listOfCustomers %}
             <tr>
                 <td>
+                    {{ c.Id }}
+                </td>
+                <td>
                     {{ c.GivenName }}
                 </td>
                 <td>
                     {{ c.Surname }}
+                </td>
+                <td>
+                    {{ c.NationalId }}
+                </td>
+                <td>
+                    {{ c.Streetaddress }}
                 </td>
                 <td>
                     {{ c.City }}
@@ -66,7 +83,9 @@ Du är på sidan {{ page }} av totalt {{ pages }}
                         href="/customers?page={{ page - 1 }}&sortColumn={{ sortColumn }}&sortOrder={{ sortOrder }}&q={{ q }}">Prev</a>
                     {% endif %}
                 </td>
+                <td></td>
                 <td colspan="2" style="text-align: center;">Du är på sidan {{ page }} av totalt {{ pages }}</td>
+                <td></td>
                 <td>
                     {% if has_next %}
                     <a class="btn"

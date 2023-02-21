@@ -6,6 +6,27 @@ from flask_security import Security,SQLAlchemyUserDatastore, hash_password
 from sqlalchemy import create_engine
 from datetime import datetime
 
+def create_a_customer():
+    customer = Customer()
+    account = Account()
+    customer.GivenName =  "Peter"
+    customer.Surname = "Pan"
+    customer.Streetaddress = "Nånting 1"
+    customer.City = "Ingenstans"
+    customer.Zipcode = "23477"
+    customer.Country = "Ingenstans"
+    customer.CountryCode = "IN"
+    customer.Birthday = datetime.now()
+    customer.NationalId = "19900101-0000"
+    customer.TelephoneCountryCode = "47"
+    customer.Telephone = "07125585157"
+    customer.EmailAddress = "Peter@Pan.com"
+    account.AccountType = "Personal"
+    account.Created = datetime.now()
+    account.Balance = 100
+    customer.Accounts.append(account)
+    db.session.add(customer)
+    db.session.commit()
 
 def set_current_user(app, ds, email):
     """Set up so that when request is received,
@@ -40,6 +61,7 @@ class FormsTestCases(unittest.TestCase):
         app.config['SECURITY_FRESHNESS_GRACE_PERIOD'] = 123454
 
 
+
         global init
         if not init:
             db.init_app(app)
@@ -50,48 +72,20 @@ class FormsTestCases(unittest.TestCase):
             app.security.init_app(app, user_datastore,register_blueprint=False)
             app.security.datastore.db.create_all()
 
-
-
    
 
 
     def test_when_withdrawing_more_than_balance_should_show_errormessage(self):
-        # arrangera världen så att kund med id 1 har amount 100
-        # ta ut 200
-        # kolla i rerultat HTML = "Belopp to large"
-
-        app.security.datastore.create_role(name="Admin")
-        app.security.datastore.create_user(email="unittest@me.com", password=hash_password("password"), roles=["Admin"])
-        app.security.datastore.commit()
-
-        set_current_user(app, app.security.datastore, "unittest@me.com")
-
-        customer = Customer()
-        account = Account()
-        customer.GivenName =  "Peter"
-        customer.Surname = "Pan"
-        customer.Streetaddress = "Nånting 1"
-        customer.City = "Ingenstans"
-        customer.Zipcode = "23477"
-        customer.Country = "Ingenstans"
-        customer.CountryCode = "IN"
-        customer.Birthday = datetime.now()
-        customer.NationalId = "19900101-0000"
-        customer.TelephoneCountryCode = "47"
-        customer.Telephone = "07125585157"
-        customer.EmailAddress = "Peter@Pan.com"
-        account.AccountType = "Personal"
-        account.Created = datetime.now()
-        account.Balance = 100
-        customer.Accounts.append(account)
-        db.session.add(customer)
-        db.session.commit()
-
-
+        # app.security.datastore.create_role(name="Admin")
+        # app.security.datastore.create_user(email="unittest@me.com", password=hash_password("password"), roles=["Admin"])
+        # app.security.datastore.commit()
+        # set_current_user(app, app.security.datastore, "unittest@me.com")
         test_client = app.test_client()
-        user = User.query.get(1)
+
+        create_a_customer()
+        customer = Customer.query.get(1)
         with test_client:
-            url = '/customer/1/1/credit'
+            url = f'/customer/{customer.Id}/1/credit'
             response = test_client.post(url, data={ "amount":"200", "account":"1"},  headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
             s = response.data.decode("utf-8") 
             ok = 'Not enough money on account' in s
@@ -99,50 +93,22 @@ class FormsTestCases(unittest.TestCase):
 
 
     def test_when_credit_minus_amount_should_show_errormessage(self):
-    #     # arrangera världen så att kund med id 1 har amount 100
-    #     # ta ut 200
-    #     # kolla i rerultat HTML = "Belopp to large"
-
-        # app.security.datastore.create_role(name="Admin")
-        # app.security.datastore.create_user(email="unittest@me.com", password=hash_password("password"), roles=["Admin"])
-        # app.security.datastore.commit()
-
         # set_current_user(app, app.security.datastore, "unittest@me.com")
-
-        # customer = Customer()
-        # account = Account()
-        # customer.GivenName =  "Peter"
-        # customer.Surname = "Pan"
-        # customer.Streetaddress = "Nånting 1"
-        # customer.City = "Ingenstans"
-        # customer.Zipcode = "23477"
-        # customer.Country = "Ingenstans"
-        # customer.CountryCode = "IN"
-        # customer.Birthday = datetime.now()
-        # customer.NationalId = "19900101-0000"
-        # customer.TelephoneCountryCode = "47"
-        # customer.Telephone = "07125585157"
-        # customer.EmailAddress = "Peter@Pan.com"
-        # account.AccountType = "Personal"
-        # account.Created = datetime.now()
-        # account.Balance = 100
-        # customer.Accounts.append(account)
-        # db.session.add(customer)
-        # db.session.commit()
-
         test_client = app.test_client()
-        # user = User.query.get(1)
+        create_a_customer()
+        customer = Customer.query.get(1)
         with test_client:
-            url = '/customer/1/1/credit'
+            url = f'/customer/{customer.Id}/1/credit'
             response = test_client.post(url, data={ "amount":"-100", "account":"1"},  headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
             s = response.data.decode("utf-8") 
             ok = "Can not be lower than 1" in s
             self.assertTrue(ok)
 
 
+
     def test_when_debit_minus_amount_should_show_errormessage(self):
+        # set_current_user(app, app.security.datastore, "unittest@me.com")
         test_client = app.test_client()
-        # user = User.query.get(1)
         with test_client:
             url = '/customer/1/1/debit'
             response = test_client.post(url, data={ "amount":"-100", "account":"1"},  headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
@@ -150,14 +116,73 @@ class FormsTestCases(unittest.TestCase):
             ok = "Can not be lower than 1" in s
             self.assertTrue(ok)
 
-    # def test_when_creating_new_should_validate_name_ends_with_se(self):
-    #     test_client = app.test_client()
-    #     with test_client:
-    #         url = '/newcustomer'
-    #         response = test_client.post(url, data={ "name":"Kalle", "city":"Teststad", "age":"31", "countryCode":"SE", "Amount":"0" }, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
-    #         s = response.data.decode("utf-8") 
-    #         ok = 'Måste sluta på .se dummer' in s
-    #         self.assertTrue(ok)
+    def test_when_creating_new_customer_name_should_validate_lenght_less_than_two(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={ "givenname":"h", "surname":"Pan", "streetaddress":"Nånting 1", "city":"Ingenstans", "zipcode":23477, "Country":"Ingenstans",
+                 "CountryCode":"IN", "BirthDay":datetime.now(), "NationalId":"19900101-0000", "TelephoneCountryCode":"47","Telephone":"07125585157", "EmailAddress":"Peter@Pan.com"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = 'Firstname cannot be less than two letters or more than 30' in s
+            self.assertTrue(ok)
+
+    def test_when_creating_new_customer_addrees_should_validate_right_form(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={ "givenname":"Peter", "surname":"Pan", "streetaddress":"Nånting1", "city":"Ingenstans", "zipcode":23477, "Country":"Ingenstans",
+                 "CountryCode":"IN", "BirthDay":datetime.now(), "NationalId":"19900101-0000", "TelephoneCountryCode":"47","Telephone":"07125585157", "EmailAddress":"Peter@Pan.com"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = 'Not a valid address must contain letters, whitespace and at leat one digit' in s
+            self.assertTrue(ok)
+
+    def test_when_creating_new_customer_city_validate_only_letters(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={ "givenname":"Peter", "surname":"Pan", "streetaddress":"Nånting 1", "city":"Ingenstans2", "zipcode":23477, "Country":"Ingenstans",
+                 "CountryCode":"IN", "BirthDay":datetime.now(), "NationalId":"19900101-0000", "TelephoneCountryCode":"47","Telephone":"07125585157", "EmailAddress":"Peter@Pan.com"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = 'Can only be letters' in s
+            self.assertTrue(ok)
+
+    def test_when_creating_new_customer_zipcode_validate_minus_digit(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={ "givenname":"Peter", "surname":"Pan", "streetaddress":"Nånting 1", "city":"Ingenstans", "zipcode":-23477, "Country":"Ingenstans",
+                 "CountryCode":"IN", "BirthDay":datetime.now(), "NationalId":"19900101-0000", "TelephoneCountryCode":"47","Telephone":"07125585157", "EmailAddress":"Peter@Pan.com"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = "Zipcode can not be negative number" in s
+            self.assertTrue(ok)
+    
+    def test_when_creating_new_customer_nationalID_validate_right_form(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={ "givenname":"Peter", "surname":"Pan", "streetaddress":"Nånting 1", "city":"Ingenstans", "zipcode":23477, "Country":"Ingenstans",
+                    "CountryCode":"IN", "BirthDay":datetime.now(), "nationalid":"199402661231", "TelephoneCountryCode":"47","Telephone":"07125585157", "EmailAddress":"Peter@Pan.com"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = "Only in the form of xxxxxxxx-xxxx" in s
+            self.assertTrue(ok)
+
+    def test_when_creating_new_customer_phonenumber_validate_if_plus_right_form(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={"phonenumber":"+07125585123"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = "Only phonenumber not with the phonecountrycode" in s
+            self.assertTrue(ok)
+    
+    def test_when_creating_new_customer_phonenumber_validate_if_right_form(self):
+        test_client = app.test_client()
+        with test_client:
+            url = '/new_customer'
+            response = test_client.post(url, data={"phonenumber":"071255851asd3"}, headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = "Only digits in phonenumber except for -" in s
+            self.assertTrue(ok)
 
     # def test_when_creating_new_should_be_ok_when_name_is_ok(self):
     #     test_client = app.test_client()

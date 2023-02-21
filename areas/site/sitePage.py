@@ -20,7 +20,7 @@ def startpage():
     total = []
     for c in distinct:
         total.append(len(Customer.query.filter_by(Country=c).all()))
-    country_customer={d:t for (d,t) in zip(distinct,total)}
+    country_customer={d:t for (d,t) in zip(distinct, total)}
     return render_template("site/start.html", customers=customers, accounts=len(Account.query.all()), totalsaldo=sum([x.Balance for x in Account.query.all()]), country_customer=country_customer)
 
 

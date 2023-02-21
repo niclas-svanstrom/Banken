@@ -51,7 +51,7 @@ def customers():
 
 
 @customerBluePrint.route("/new_customer", methods=['GET', 'POST'])
-@auth_required()
+# @auth_required()
 def new_customer():
     form = new_customer_form()
     if form.validate_on_submit():
@@ -150,17 +150,26 @@ def editcustomer(id):
         form.email.data = customer.EmailAddress
     return render_template("customer/edit_customer.html", formen=form )
 
+@customerBluePrint.route('/customer/background_process_customer/<c_id>/<a_id>')
+def all_transactions(c_id, a_id):
+    transactions=[]
+    page = int(request.args.get('page',1))
+    transac = Transaction.query.filter_by(AccountId=a_id).order_by(Transaction.Date.desc()).paginate(page=page,per_page=10)
+    for tr in transac.items:
+        t = {"Type":tr.Type, "Operation":tr.Operation, "Amount":tr.Amount, "Date":tr.Date}
+        transactions.append(t)
+    return jsonify(transactions)
 
 @customerBluePrint.route("/customer/<c_id>/<a_id>")
 @auth_required()
 def account(c_id, a_id):
     account = Account.query.filter_by(Id=a_id).first()
     trans = Transaction.query.filter_by(AccountId=a_id).all()
-    return render_template("customer/account.html", account=account, trans=trans)
+    return render_template("customer/account.html", trans=trans, c_id=c_id, account=account)
 
     
 @customerBluePrint.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
-@auth_required()
+# @auth_required()
 def debit(c_id, a_id):
     error = None
     the_account = Account.query.filter_by(Id=a_id).first()
@@ -188,7 +197,7 @@ def debit(c_id, a_id):
 
 
 @customerBluePrint.route("/customer/<c_id>/<a_id>/credit", methods=['GET', 'POST'])
-@auth_required()
+# @auth_required()
 def credit(c_id, a_id):
     error = None
     account = Account.query.filter_by(Id=a_id).first()

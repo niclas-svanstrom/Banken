@@ -11,7 +11,7 @@ Startsida
     <div class="col-sm-4 rid-margin">
         <div class="card">
             <div class="card-body">
-                <h5>Antal Kunder</h5>
+                <h5>Total Customers</h5>
                 <div class="row">
                     <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
@@ -28,7 +28,7 @@ Startsida
     <div class="col-sm-4 grid-margin">
         <div class="card">
             <div class="card-body">
-                <h5>Antal konton</h5>
+                <h5>Total Accounts</h5>
                 <div class="row">
                     <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
@@ -45,7 +45,7 @@ Startsida
     <div class="col-sm-4 grid-margin">
         <div class="card">
             <div class="card-body">
-                <h5>Totalt på alla konton</h5>
+                <h5>Total on all Accounts</h5>
                 <div class="row">
                     <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
@@ -72,25 +72,21 @@ Startsida
                             <table class="table">
                                 <tbody>
                                     <tr>
-                                        <td></td>
                                         <td class="font-weight-medium">
                                             Country:
                                         </td>
                                         <td class="text-right font-weight-medium">
                                             Customers:
                                         </td>
-                                        <td class="text-right font-weight-medium">
-                                            Percentage:
-                                        </td>
+                                        <td></td>
                                     </tr>
                                     {% for c,t in country_customer.items() %}
                                     <tr>
-                                        <td></td>
                                         <td>
                                             <a href="/country/{{c}}" class="btn text-muted">{{ c }}</a>
                                         </td>
                                         <td class="text-right"> {{ t }} </td>
-                                        <td class="text-right"> {{ t/customers*100 }}% </td>
+                                        <td></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

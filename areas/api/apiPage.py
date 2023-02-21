@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request, render_template
 from model import Customer
 
 apiBluePrint = Blueprint('api', __name__)
@@ -35,13 +35,20 @@ def _map_customer_to_api(customer):
     customer_api_model.EmailAddress = customer.EmailAddress
     return customer_api_model
 
-@apiBluePrint.route('/api/customer')
+@apiBluePrint.route("/api/customers")
+def api_customerpage():
+    customers = all_customers()
+    return render_template("customer/apicustomers.html", customers=customers)
+
+@apiBluePrint.route('/api/background_process_customer')
 def all_customers():
-    list_of_all = []
-    for customer in Customer.query.all():
-        Api_Customer_Model = _map_customer_to_api(customer)
-        list_of_all.append(Api_Customer_Model)
-    return jsonify([apicustomer.__dict__ for apicustomer in list_of_all])
+    customers=[]
+    page = int(request.args.get('page',1))
+    custs = Customer.query.order_by(Customer.Id.desc()).paginate(page=page,per_page=10)
+    for cust in custs.items:
+        c = { "Id": cust.Id, "NationalId":cust.NationalId, "Firstname":cust.GivenName, "Lastname":cust.Surname, "Address":cust.Streetaddress, "City":cust.City }
+        customers.append(c)
+    return jsonify(customers)
 
 @apiBluePrint.route('/api/customer/<id>')
 def one_customer(id):

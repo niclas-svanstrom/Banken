@@ -1,50 +1,56 @@
 {% extends "basetemplate3.html" %}
 
 {% block title %}
-
+Alla kunder
 {% endblock %}
 
 {% block content %}
 
 <div class="card">
     <div class="card-body">
-        <div class="row">
-            <h4 class="card-title">Konto: {{account.Id}} Totalt på kontot: {{account.Balance}}</h4>
-        </div>
-        <table class="table">
-            <tr>
-                <th>
-                    Type
-                </th>
-                <th>
-                    Operation
-                </th>
-                <th>
-                    Ammount
-                </th>
-                <th>
-                    Date
-                </th>
-            </tr>
-            {% for t in trans %}
-            <tr>
-                <td>
-                    {{ t.Type }}
-                </td>
-                <td>
-                    {{ t.Operation }}
-                </td>
-                <td>
-                    {{ t.Amount }}
-                </td>
-                <td>
-                    {{ t.Date }}
-                </td>
-            </tr>
-            {% endfor %}
+        <h4 class="card-title" style="margin-top: 10px;">Transactions on account: {{account.Id}}</h4>
+        <table class="table" id="posts-table">
+            <thead>
+                <tr>
+                    <td>Type:</td>
+                    <td>Operation:</td>
+                    <td>Amount:</td>
+                    <td>Date:</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
         </table>
-
     </div>
 </div>
+
+<a class="btn" href="javascript:fetchMore()">10 more</a>
+<script>
+
+    pageNo = 1;
+    function fetchMore() {
+        fetch("/customer/background_process_customer/{{c_id}}/{{account.Id}}?page=" + pageNo)
+            .then((response) => response.json())
+            .then((json) => {
+                pageNo = pageNo + 1;
+                json.forEach(tableElements);
+            }
+            );
+    }
+
+    function tableElements(element) {
+        document.querySelector('#posts-table tbody').innerHTML +=
+            `<tr>
+                <td>${element.Type}</td>
+                <td>${element.Operation}</td>
+                <td>${element.Amount}</td>
+        <td>${element.Date}</td>
+    </tr>`;
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        fetchMore();
+    });
+
+</script>
 
 {% endblock %}
