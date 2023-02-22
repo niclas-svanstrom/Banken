@@ -2,8 +2,8 @@ from flask import render_template, request, redirect, url_for, flash, Blueprint,
 from flask_security import roles_accepted, auth_required, hash_password
 from flask_login import current_user
 
-from model import Role, User
-from forms import new_user_form
+from model import Role, User, user_datastore
+from forms import new_user_form, update_user_form
 
 adminBluePrint = Blueprint('admin', __name__)
 
@@ -35,3 +35,29 @@ def register():
         else:
             form.email.errors += ('Email is already in use',)
     return render_template("admin/new_user.html", form=form)
+
+@adminBluePrint.route("/edit/<u_id>", methods=['GET', 'POST'])
+@auth_required()
+@roles_accepted("Admin")
+def edit(u_id):
+    user = User.query.filter_by(id=u_id).first()
+    form = update_user_form()
+    form.role.choices = [("", "---")]+[(r.name, r.name) for r in Role.query.all()]
+    form.delete_role.choices = [("", "---")]+[(r.name, r.name) for r in user.roles]
+    if form.validate_on_submit():
+        user.email = form.email.data
+        if user.has_role(form.role.data):
+            form.role.errors += ('User already has that role',)
+        else:
+            if len(form.password.data) != 0:
+                user.password = hash_password(form.password.data)
+            if form.role.data != "":
+                user_datastore.add_role_to_user(user_datastore.find_user(email=(user.email)),form.role.data)
+            if form.delete_role.data != "":
+                user_datastore.remove_role_from_user(user_datastore.find_user(email=(user.email)),form.delete_role.data)
+            current_app.security.datastore.db.session.commit()
+            flash('User Updated')
+            return redirect(url_for('admin.adminpage'))
+    if request.method == 'GET':
+        form.email.data = user.email
+    return render_template("admin/edit.html", form=form)

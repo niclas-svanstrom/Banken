@@ -69,3 +69,9 @@ class new_user_form(FlaskForm):
     email = EmailField('Email:', validators=[validators.DataRequired()])
     password = PasswordField('Password:', validators=[validators.DataRequired()])
     role = SelectField('Role', choices=[], validators=[validators.DataRequired()])
+
+class update_user_form(FlaskForm):
+    email = EmailField('Email:', validators=[validators.DataRequired()])
+    password = PasswordField('Password:', validators=[])
+    role = SelectField('Role', choices=[])
+    delete_role = SelectField('Role', choices=[])

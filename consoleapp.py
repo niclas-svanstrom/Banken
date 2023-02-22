@@ -34,11 +34,6 @@ def open_new_file():
 
 if __name__  == "__main__":
     with app.app_context():
-        # msg = Message('Shady Transactions', sender = '58d9c9a416909a', recipients = ['sweden@testbanken.se'])
-        # msg.body = "This is the email body"
-        # mail.send(msg)
-
-
         upgrade()
         now = datetime.now()
 

@@ -1,0 +1,60 @@
+{% extends "basetemplate3.html" %}
+
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title" style="text-align: center;">New User:</h2>
+            {% for field, errors in form.errors.items() %}
+            {{ form[field].label }} {{ ', '.join(errors) }}
+            </br>
+            {% endfor %}
+            <form method="post">
+                {{ form.csrf_token }}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                {{ form.email(class="form-control p_input") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Password</label>
+                            <div class="col-sm-9">
+                                {{ form.password(class="form-control p_input") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Add Role</label>
+                            <div class="col-sm-9">
+                                {{ form.role(class="form-control p_input") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Remove Role</label>
+                            <div class="col-sm-9">
+                                {{ form.delete_role(class="form-control p_input") }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        <button type="submit" class="btn btn-primary mr-2" value="Submit">Submit</button>
+        <a href="/adminpage" class="btn btn-dark">Cancel</a>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endblock %}
