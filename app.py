@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate, upgrade
+from flask_mail import Mail
 import os
 from areas.admin.adminPage import adminBluePrint
 from areas.customer.customerPage import customerBluePrint
@@ -10,7 +11,7 @@ from model import db, seedData
  
 app = Flask(__name__)
 app.config.from_object('config.ConfigDebug')
-
+Mail(app)
 db.app = app
 db.init_app(app)
 migrate = Migrate(app,db)

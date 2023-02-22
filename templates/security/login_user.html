@@ -9,7 +9,7 @@ prop_next %}
   {{ login_user_form.hidden_tag() }}
   {{ render_form_errors(login_user_form) }}
   {% if "email" in identity_attributes %}
-  {{ render_field_with_errors(login_user_form.email) }}
+  {{ render_field_with_errors(login_user_form.email, class="form-control p_input") }}
   {% endif %}
   {% if login_user_form.username and "username" in identity_attributes %}
   {% if "email" in identity_attributes %}
@@ -18,11 +18,16 @@ prop_next %}
   {{ render_field_with_errors(login_user_form.username) }}
   {% endif %}
   <div class="fs-gap">
-    {{ render_field_with_errors(login_user_form.password) }}</div>
+    {{ render_field_with_errors(login_user_form.password, class="form-control p_input") }}</div>
   {{ render_field_with_errors(login_user_form.remember) }}
   {{ render_field_errors(login_user_form.csrf_token) }}
-  {{ render_field(login_user_form.submit) }}
+  {{ render_field(login_user_form.submit, class="btn btn-outline-secondary btn-md") }}
 </form>
+
+<a class="btn btn-outline-secondary btn-md" href="{{ url_for_security('forgot_password') }}"
+  style="display: inline-block;">{{ _fsdomain('Forgot password')
+  }}</a><br />
+
 {% if security.webauthn %}
 <hr class="fs-gap">
 <h2>{{ _fsdomain("Use WebAuthn to Sign In") }}</h2>
@@ -45,5 +50,5 @@ prop_next %}
 </div>
 {% endfor %}
 {% endif %}
-{% include "security/_menu.html" %}
+<!-- {% include "security/_menu.html" %} -->
 {% endblock %}

@@ -11,6 +11,11 @@ def logout():
     logout_user()
     return redirect("/")
 
+@siteBluePrint.route("/test")
+def reset():
+    return render_template("security/forgot_password.html")
+
+
 
 @siteBluePrint.route("/")
 @auth_required()

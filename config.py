@@ -7,6 +7,7 @@ class ConfigDebug():
     REMEMBER_COOKIE_SAMESITE = "strict"
     SESSION_COOKIE_SAMESITE = "strict"
     SECURITY_REGISTERABLE = True
+    SECURITY_RECOVERABLE = True
 
     #min setup på mailtrap
     MAIL_SERVER='sandbox.smtp.mailtrap.io'
