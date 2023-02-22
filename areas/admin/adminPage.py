@@ -42,8 +42,8 @@ def register():
 def edit(u_id):
     user = User.query.filter_by(id=u_id).first()
     form = update_user_form()
-    form.role.choices = [("", "---")]+[(r.name, r.name) for r in Role.query.all()]
     form.delete_role.choices = [("", "---")]+[(r.name, r.name) for r in user.roles]
+    form.role.choices = [("", "---")]+[(r.name, r.name) for r in Role.query.all() if r not in user.roles]
     if form.validate_on_submit():
         user.email = form.email.data
         if user.has_role(form.role.data):
