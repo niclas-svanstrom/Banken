@@ -5,3 +5,5 @@ areas/admin/__pycache__
 areas/api/__pycache__
 areas/site/__pycache__
 areas/customer/__pycache__
+lastrundate.txt
+sendtoemail.txt
