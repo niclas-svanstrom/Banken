@@ -169,7 +169,7 @@ def account(c_id, a_id):
 
     
 @customerBluePrint.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
-# @auth_required()
+@auth_required()
 def debit(c_id, a_id):
     error = None
     the_account = Account.query.filter_by(Id=a_id).first()
@@ -197,7 +197,7 @@ def debit(c_id, a_id):
 
 
 @customerBluePrint.route("/customer/<c_id>/<a_id>/credit", methods=['GET', 'POST'])
-# @auth_required()
+@auth_required()
 def credit(c_id, a_id):
     error = None
     account = Account.query.filter_by(Id=a_id).first()

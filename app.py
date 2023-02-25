@@ -23,11 +23,10 @@ app.register_blueprint(apiBluePrint)
 
 
 
-
 if __name__  == "__main__":
     with app.app_context():
         upgrade()
     
         seedData(app, db)
-        app.run(debug=True)
+        app.run()
 

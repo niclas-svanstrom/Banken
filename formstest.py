@@ -8,7 +8,8 @@ from datetime import datetime
 
 def create_a_customer():
     customer = Customer()
-    account = Account()
+    account1 = Account()
+    account2 = Account()
     customer.GivenName =  "Peter"
     customer.Surname = "Pan"
     customer.Streetaddress = "Nånting 1"
@@ -21,10 +22,14 @@ def create_a_customer():
     customer.TelephoneCountryCode = "47"
     customer.Telephone = "07125585157"
     customer.EmailAddress = "Peter@Pan.com"
-    account.AccountType = "Personal"
-    account.Created = datetime.now()
-    account.Balance = 100
-    customer.Accounts.append(account)
+    account1.AccountType = "Personal"
+    account1.Created = datetime.now()
+    account1.Balance = 100
+    account2.AccountType = "Personal"
+    account2.Created = datetime.now()
+    account2.Balance = 100
+    customer.Accounts.append(account1)
+    customer.Accounts.append(account2)
     db.session.add(customer)
     db.session.commit()
 
@@ -104,6 +109,17 @@ class FormsTestCases(unittest.TestCase):
             ok = "Can not be lower than 1" in s
             self.assertTrue(ok)
 
+    def test_when_transfering_more_than_balance_should_show_errormessage(self):
+        # set_current_user(app, app.security.datastore, "unittest@me.com")
+        test_client = app.test_client()
+        create_a_customer()
+        customer = Customer.query.get(1)
+        with test_client:
+            url = f'/customer/{customer.Id}/1/transfer'
+            response = test_client.post(url, data={ "amount":"200", "from_account":"1", "to_account":"2"},  headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
+            s = response.data.decode("utf-8") 
+            ok = 'Not enough money on account' in s
+            self.assertTrue(ok)
 
 
     def test_when_debit_minus_amount_should_show_errormessage(self):
