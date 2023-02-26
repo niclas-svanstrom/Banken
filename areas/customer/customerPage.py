@@ -93,7 +93,7 @@ def new_customer():
             customer.Birthday = form.birthday.data
             customer.NationalId = form.nationalid.data
             customer.TelephoneCountryCode = form.phonecountrycode.data
-            customer.Telephone = form.phonenumber.data
+            customer.Telephone = form.phonenumber.data.replace(" ","")
             customer.EmailAddress = form.email.data
             account.AccountType = "Personal"
             account.Created = datetime.now()
@@ -145,17 +145,20 @@ def editcustomer(id):
         customer.City = form.city.data
         customer.Zipcode = form.zipcode.data
         customer.Country = form.country.data
-        customer.CountryCode = pycountry.countries.get(name=form.country.data).alpha_2
+        if form.country.data == 'USA':
+            customer.CountryCode = pycountry.countries.get(name='United States').alpha_2
+        else:
+            customer.CountryCode = pycountry.countries.get(name=form.country.data).alpha_2
         customer.Birthday = form.birthday.data
         customer.NationalId = form.nationalid.data
         customer.TelephoneCountryCode = form.phonecountrycode.data
-        customer.Telephone = form.phonenumber.data
+        customer.Telephone = form.phonenumber.data.replace(" ","")
         customer.EmailAddress = form.email.data
         customer.verified = True
         db.session.commit()
         flash('Customer Edited')
         return redirect(url_for("customer.customers"))
-    if request.method == 'GET':
+    elif request.method == 'GET':
         form.givenname.data = customer.GivenName
         form.surname.data = customer.Surname
         form.streetaddress.data = customer.Streetaddress
@@ -183,9 +186,11 @@ def all_transactions(c_id, a_id):
 @customerBluePrint.route("/customer/<c_id>/<a_id>")
 @auth_required()
 def account(c_id, a_id):
+    total_transactions = True
     account = Account.query.filter_by(Id=a_id).first()
-    trans = Transaction.query.filter_by(AccountId=a_id).all()
-    return render_template("customer/account.html", trans=trans, c_id=c_id, account=account)
+    if len(Transaction.query.filter_by(AccountId=a_id).all()) < 10:
+        total_transactions = False
+    return render_template("customer/account.html", trans=total_transactions, c_id=c_id, account=account)
 
     
 @customerBluePrint.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
@@ -251,6 +256,7 @@ def credit(c_id, a_id):
 @auth_required()
 def transfer(c_id, a_id):
     error = None
+    account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
     form = transfer_form()
@@ -285,4 +291,6 @@ def transfer(c_id, a_id):
             db.session.commit()
             flash('Transfer Completed')
             return redirect(url_for('customer.customer', id=c_id))
+    if request.method == 'GET':
+        form.from_account.data = str(account.Id)
     return render_template("customer/transfer.html", customer=customer, error=error, form=form)
