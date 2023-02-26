@@ -63,7 +63,7 @@ class Transaction(db.Model):
 
 
 def seedData(app,db):
-    app.security = Security(app, user_datastore)
+    # app.security = Security(app, user_datastore)
     app.security.datastore.db.create_all()
     if not app.security.datastore.find_role("Admin"):
         app.security.datastore.create_role(name="Admin")

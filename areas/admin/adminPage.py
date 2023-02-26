@@ -19,7 +19,7 @@ def adminpage():
         return redirect(url_for('admin.adminpage'))
     return render_template("admin/adminpage.html", listOfUsers=listOfUsers)
 
-@adminBluePrint.route("/register", methods=['GET', 'POST'])
+@adminBluePrint.route("/new_user", methods=['GET', 'POST'])
 @auth_required()
 @roles_accepted("Admin")
 def register():
