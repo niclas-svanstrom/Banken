@@ -10,9 +10,10 @@
     <div class="card">
         <div class="card-body">
             <h2 class="card-title" style="text-align: center;">Uppdatera kund:</h2>
-            {% if error %}
-            <p>{{ error }}</p>
-            {% endif %}
+            {% for field, errors in formen.errors.items() %}
+            {{ formen[field].label }} {{ ', '.join(errors) }}
+            </br>
+            {% endfor %}
             <form method="post">
                 {{ formen.csrf_token }}
                 <p class="card-description"> Personal info </p>

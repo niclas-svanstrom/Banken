@@ -11,7 +11,10 @@ def only_letters(form, field):
 
 count= []
 for country in pycountry.countries:
-    c = (country.name,country.name)
+    if country.name == 'United States':
+        c = ('USA','USA')
+    else:
+        c = (country.name,country.name)
     count.append(c)
 
 def lower_than_one(form, field):
@@ -30,9 +33,11 @@ def valid_adress(form, field):
 
 def valid_phonenumber(form, field):
     phonenumber = field.data
-    if phonenumber[0] == "+":
-        raise ValidationError('Only phonenumber not with the phonecountrycode')
-    elif not (phonenumber.strip(" ").isdigit() or phonenumber.strip("-").isdigit()):
+    if not phonenumber[0].isdigit():
+        raise ValidationError('Can only start with a number')
+    elif phonenumber.count("-") > 1:
+        raise ValidationError('Can only be one - in the phonenumber')
+    elif not (phonenumber.replace(" ","").isdigit() or phonenumber.replace("-","").isdigit()):
         raise ValidationError('Only digits in phonenumber except for -')
     
 def valid_nationalid(form, field):
@@ -40,6 +45,9 @@ def valid_nationalid(form, field):
     if not re.fullmatch(regex, field.data):
         raise ValidationError('Only in the form of xxxxxxxx-xxxx')
     
+def valid_phonecountrycode(form, field):
+    if field.data > 9999:
+        raise ValidationError('Too high to be a phone country code')
 
 class new_customer_form(FlaskForm):
     givenname = StringField('Firstname:', validators=[validators.DataRequired(), only_letters, validators.length(min=2, max=30, message="Firstname cannot be less than two letters or more than 30")])
@@ -51,7 +59,7 @@ class new_customer_form(FlaskForm):
     countrycode = HiddenField()
     birthday = DateField('Birthday:', validators=[validators.DataRequired()])
     nationalid = StringField('National ID:' , validators=[validators.DataRequired(), valid_nationalid])
-    phonecountrycode = IntegerField('Phone Countrycode:', validators=[validators.DataRequired()])
+    phonecountrycode = IntegerField('Phone Countrycode:', validators=[validators.DataRequired(),valid_phonecountrycode])
     phonenumber = StringField('Phonenumber:', validators=[validators.DataRequired(), valid_phonenumber])
     email = EmailField('Emailaddress:', validators=[validators.DataRequired()])
 

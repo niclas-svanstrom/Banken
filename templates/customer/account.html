@@ -8,7 +8,7 @@ Alla kunder
 
 <div class="card">
     <div class="card-body">
-        <h4 class="card-title" style="margin-top: 10px;">Transactions on account: {{account.Id}}</h4>
+        <h1 class="card-title" style="margin-top: 10px;">Transactions on account: {{account.Id}}</h1>
         <table class="table" id="posts-table">
             <thead>
                 <tr>
@@ -23,8 +23,9 @@ Alla kunder
         </table>
     </div>
 </div>
-
+{% if trans %}
 <a class="btn" href="javascript:fetchMore()">10 more</a>
+{% endif %}
 <script>
 
     pageNo = 1;

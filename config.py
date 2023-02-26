@@ -1,8 +1,8 @@
 import os
 
 class ConfigDebug():
-    # SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://niclas123:Hejsvejs01@pythonbankserver.mysql.database.azure.com/bankdatabase'
+    SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
+    # SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://niclas123:Hejsvejs01@pythonbankserver.mysql.database.azure.com/bankdatabase'
     SECRET_KEY = os.environ.get("SECRET_KEY", 'super secret key')
     SECURITY_PASSWORD_SALT = os.environ.get("SECURITY_PASSWORD_SALT", '1241848918926306')
     REMEMBER_COOKIE_SAMESITE = "strict"
