@@ -1,4 +1,5 @@
 {% extends "basetemplate3.html" %}
+{% from "_formhelpers.html" import render_field %}
 
 {% block title %}
 
@@ -10,10 +11,6 @@
     <div class="card">
         <div class="card-body">
             <h2 class="card-title" style="text-align: center;">Uppdatera kund:</h2>
-            {% for field, errors in formen.errors.items() %}
-            {{ formen[field].label }} {{ ', '.join(errors) }}
-            </br>
-            {% endfor %}
             <form method="post">
                 {{ formen.csrf_token }}
                 <p class="card-description"> Personal info </p>
@@ -22,7 +19,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">First Name</label>
                             <div class="col-sm-9">
-                                {{ formen.givenname(class="form-control p_input") }}
+                                {{ render_field(formen.givenname, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -30,7 +27,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Last Name</label>
                             <div class="col-sm-9">
-                                {{ formen.surname(class="form-control p_input") }}
+                                {{ render_field(formen.surname, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -40,7 +37,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Date of Birth</label>
                             <div class="col-sm-9">
-                                {{ formen.birthday(class="form-control p_input") }}
+                                {{ render_field(formen.birthday, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -48,7 +45,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">National ID</label>
                             <div class="col-sm-9">
-                                {{ formen.nationalid(class="form-control p_input") }}
+                                {{ render_field(formen.nationalid, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -58,7 +55,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Phone country code</label>
                             <div class="col-sm-9">
-                                {{ formen.phonecountrycode(class="form-control p_input") }}
+                                {{ render_field(formen.phonecountrycode, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -66,7 +63,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Phonenumber</label>
                             <div class="col-sm-9">
-                                {{ formen.phonenumber(class="form-control p_input") }}
+                                {{ render_field(formen.phonenumber, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -76,7 +73,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Emailaddress</label>
                             <div class="col-sm-9">
-                                {{ formen.email(class="form-control p_input") }}
+                                {{ render_field(formen.email, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -87,7 +84,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Address</label>
                             <div class="col-sm-9">
-                                {{ formen.streetaddress(class="form-control p_input") }}
+                                {{ render_field(formen.streetaddress, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -95,7 +92,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">City</label>
                             <div class="col-sm-9">
-                                {{ formen.city(class="form-control p_input") }}
+                                {{ render_field(formen.city, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -105,16 +102,15 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Zipcode</label>
                             <div class="col-sm-9">
-                                {{ formen.zipcode(class="form-control p_input") }}
+                                {{ render_field(formen.zipcode, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Country</label>
                             <div class="col-sm-9">
-                                {{ formen.country(class="form-control p_input") }}
+                                {{ render_field(formen.country, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>

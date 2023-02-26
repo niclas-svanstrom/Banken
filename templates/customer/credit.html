@@ -1,4 +1,5 @@
 {% extends "basetemplate3.html" %}
+{% from "_formhelpers.html" import render_field %}
 
 {% block title %}
 
@@ -11,19 +12,15 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Credit</h4>
-            {% for field, errors in form.errors.items() %}
-            {{ form[field].label }} {{ ', '.join(errors) }}
-            </br>
-            {% endfor %}
             <form class="forms-sample" method="post">
                 {{ form.csrf_token }}
                 <div class="form-group">
                     <label for="exampleSelectGender">From account:</label>
-                    {{ form.account(class="form-control p_input") }}
+                    {{ render_field(form.account, class="form-control p_input") }}
                 </div>
                 <div class="form-group">
                     <label for="exampleInputName1">Sum:</label>
-                    {{ form.amount(class="form-control p_input", min="1") }}
+                    {{ render_field(form.amount, class="form-control p_input", min="1") }}
                 </div>
         </div>
         <button type="submit" class="btn btn-primary mr-2" value="Submit">Submit</button>

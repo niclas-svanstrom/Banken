@@ -1,4 +1,5 @@
 {% extends "basetemplate3.html" %}
+{% from "_formhelpers.html" import render_field %}
 
 {% block title %}
 
@@ -9,10 +10,6 @@
     <div class="card">
         <div class="card-body">
             <h2 class="card-title" style="text-align: center;">Edit User:</h2>
-            {% for field, errors in form.errors.items() %}
-            {{ form[field].label }} {{ ', '.join(errors) }}
-            </br>
-            {% endfor %}
             <form method="post">
                 {{ form.csrf_token }}
                 <div class="row">
@@ -20,7 +17,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Email</label>
                             <div class="col-sm-9">
-                                {{ form.email(class="form-control p_input") }}
+                                {{ render_field(form.email, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -28,7 +25,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Password</label>
                             <div class="col-sm-9">
-                                {{ form.password(class="form-control p_input") }}
+                                {{ render_field(form.password, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -36,7 +33,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Add Role</label>
                             <div class="col-sm-9">
-                                {{ form.role(class="form-control p_input") }}
+                                {{ render_field(form.role, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
@@ -44,7 +41,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Remove Role</label>
                             <div class="col-sm-9">
-                                {{ form.delete_role(class="form-control p_input") }}
+                                {{ render_field(form.delete_role, class="form-control p_input") }}
                             </div>
                         </div>
                     </div>
