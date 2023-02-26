@@ -8,10 +8,10 @@ Alla kunder
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <h4 class="card-title" style="margin-top: 10px;">Customers:</h4>
+            <h1 class="card-title" style="margin-top: 10px;">Customers:</h1>
             <form class="" style="margin-left: 200px;" method="get">
                 <div class="form-group">
-                    <div class="input-group">
+                    <div class="input-group" style="margin-top: 10px;;">
                         <input type="text" class="form-control" style="width: 500px;" placeholder="Search Customers"
                             aria-label="Recipient's username" aria-describedby="basic-addon2" name="q" value="{{ q }}">
                         <div class="input-group-append">
@@ -25,24 +25,45 @@ Alla kunder
             <tr>
                 <th>
                     Customer ID
+                    <a href="/customers?sortColumn=id&sortOrder=asc&q={{ q }}">
+                        <i class='mdi mdi-arrow-up'></i>
+                    </a>
+                    <a href="/customers?sortColumn=id&sortOrder=desc&q={{ q }}">
+                        <i class='mdi mdi-arrow-down'></i>
+                    </a>
                 </th>
                 <th>
                     Firstname
-                    <a href="/customers?sortColumn=namn&sortOrder=asc&q={{ q }}">
+                    <a href="/customers?sortColumn=fname&sortOrder=asc&q={{ q }}">
                         <i class='mdi mdi-arrow-up'></i>
                     </a>
-                    <a href="/customers?sortColumn=namn&sortOrder=desc&q={{ q }}">
+                    <a href="/customers?sortColumn=fname&sortOrder=desc&q={{ q }}">
                         <i class='mdi mdi-arrow-down'></i>
                     </a>
                 </th>
                 <th>
                     Lastname
+                    <a href="/customers?sortColumn=lname&sortOrder=asc&q={{ q }}">
+                        <i class='mdi mdi-arrow-up'></i>
+                    </a>
+                    <a href="/customers?sortColumn=lname&sortOrder=desc&q={{ q }}">
+                        <i class='mdi mdi-arrow-down'></i>
                 </th>
                 <th>
                     National ID
+                    <a href="/customers?sortColumn=nid&sortOrder=asc&q={{ q }}">
+                        <i class='mdi mdi-arrow-up'></i>
+                    </a>
+                    <a href="/customers?sortColumn=nid&sortOrder=desc&q={{ q }}">
+                        <i class='mdi mdi-arrow-down'></i>
                 </th>
                 <th>
                     Address
+                    <a href="/customers?sortColumn=address&sortOrder=asc&q={{ q }}">
+                        <i class='mdi mdi-arrow-up'></i>
+                    </a>
+                    <a href="/customers?sortColumn=address&sortOrder=desc&q={{ q }}">
+                        <i class='mdi mdi-arrow-down'></i>
                 </th>
                 <th>
                     City

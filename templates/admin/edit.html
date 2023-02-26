@@ -8,7 +8,7 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h2 class="card-title" style="text-align: center;">New User:</h2>
+            <h2 class="card-title" style="text-align: center;">Edit User:</h2>
             {% for field, errors in form.errors.items() %}
             {{ form[field].label }} {{ ', '.join(errors) }}
             </br>
@@ -55,6 +55,6 @@
         </form>
     </div>
 </div>
-</div>
+
 
 {% endblock %}

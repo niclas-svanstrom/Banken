@@ -11,12 +11,23 @@ adminBluePrint = Blueprint('admin', __name__)
 @auth_required()
 @roles_accepted("Admin")
 def adminpage():
-    listOfUsers = [u for u in User.query.all() if u.email != current_user.email]
+    listOfUsers = [u for u in User.query.order_by(User.active.desc()) if u.email != current_user.email]
     if request.method == 'POST':
-        current_app.security.datastore.delete_user(current_app.security.datastore.find_user(email=request.form['user']))
-        current_app.security.datastore.db.session.commit()
-        flash('User Deleted')
-        return redirect(url_for('admin.adminpage'))
+        if 'delete' in request.form:
+            current_app.security.datastore.delete_user(current_app.security.datastore.find_user(email=request.form['delete']))
+            current_app.security.datastore.db.session.commit()
+            flash('User Deleted')
+            return redirect(url_for('admin.adminpage'))
+        elif 'deactivate' in request.form:
+            current_app.security.datastore.deactivate_user(current_app.security.datastore.find_user(email=request.form['deactivate']))
+            current_app.security.datastore.db.session.commit()
+            flash('User Deactivated')
+            return redirect(url_for('admin.adminpage'))
+        elif 'activate' in request.form:
+            current_app.security.datastore.activate_user(current_app.security.datastore.find_user(email=request.form['activate']))
+            current_app.security.datastore.db.session.commit()
+            flash('User Activated')
+            return redirect(url_for('admin.adminpage'))
     return render_template("admin/adminpage.html", listOfUsers=listOfUsers)
 
 @adminBluePrint.route("/new_user", methods=['GET', 'POST'])

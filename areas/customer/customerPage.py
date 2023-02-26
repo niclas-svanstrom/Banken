@@ -26,16 +26,36 @@ def customers():
         Customer.GivenName.like('%' + q + '%') |
         Customer.City.like('%' + q + '%')
     )
-    if sortColumn == "namn":
+    if sortColumn == "fname":
         if sortOrder == "asc":
             listOfCustomers = listOfCustomers.order_by(Customer.GivenName.asc())
         else:
             listOfCustomers = listOfCustomers.order_by(Customer.GivenName.desc())
+    elif sortColumn == "lname":
+        if sortOrder == "asc":
+            listOfCustomers = listOfCustomers.order_by(Customer.Surname.asc())
+        else:
+            listOfCustomers = listOfCustomers.order_by(Customer.Surname.desc())
+    elif sortColumn == "nid":
+        if sortOrder == "asc":
+            listOfCustomers = listOfCustomers.order_by(Customer.NationalId.asc())
+        else:
+            listOfCustomers = listOfCustomers.order_by(Customer.NationalId.desc())
+    elif sortColumn == "address":
+        if sortOrder == "asc":
+            listOfCustomers = listOfCustomers.order_by(Customer.Streetaddress.asc())
+        else:
+            listOfCustomers = listOfCustomers.order_by(Customer.Streetaddress.desc())
     elif sortColumn == "city":
         if sortOrder == "asc":
             listOfCustomers = listOfCustomers.order_by(Customer.City.asc())
         else:
             listOfCustomers = listOfCustomers.order_by(Customer.City.desc())
+    elif sortColumn == "id":
+        if sortOrder == "asc":
+            listOfCustomers = listOfCustomers.order_by(Customer.Id.asc())
+        else:
+            listOfCustomers = listOfCustomers.order_by(Customer.Id.desc())
 
     paginationObject = listOfCustomers.paginate(page=page, per_page=25, error_out=False)
     return render_template("customer/customers.html", 
@@ -148,7 +168,7 @@ def editcustomer(id):
         form.phonecountrycode.data = customer.TelephoneCountryCode
         form.phonenumber.data = customer.Telephone
         form.email.data = customer.EmailAddress
-    return render_template("customer/edit_customer.html", formen=form )
+    return render_template("customer/edit_customer.html", formen=form, customer=customer )
 
 @customerBluePrint.route('/customer/background_process_customer/<c_id>/<a_id>')
 def all_transactions(c_id, a_id):

@@ -9,10 +9,7 @@
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <h4 class="card-title" style="margin-top: 10px;">Users:</h4>
-            <a type="button" href="new_user" class="btn btn-outline-secondary btn-md"
-                style="height: fit-content; margin-left: 150px;">Add new
-                User</a>
+            <h1 class="card-title" style="text-align: center;" style="margin-top: 10px;">Users:</h1>
         </div>
         <table class="table">
             <tr>
@@ -22,6 +19,12 @@
                 <th>
                     Role
                 </th>
+                <th>
+                    Active
+                </th>
+                <th><a type="button" href="new_user" class="btn btn-outline-secondary btn-md"
+                        style="height: fit-content; margin-left: 150px;">Add new
+                        User</a></th>
             </tr>
             {% for u in listOfUsers %}
             <tr>
@@ -34,13 +37,37 @@
                     {% endfor %}
                 </td>
                 <td>
+                    {% if u.is_active %}
+                    <label class="badge badge-success">Yes</label>
+                    {% else %}
+                    <label class="badge badge-danger">No</label>
+                    {% endif %}
+                </td>
+                <td>
                     <a type="button" href="edit/{{ u.id }}" class="btn btn-outline-secondary btn-md"
                         style="height: fit-content; margin-left: 150px;">Edit</a>
                 </td>
+                {% if u.is_active %}
                 <td>
                     <form method="POST">
-                        <input type="hidden" name="user" value="{{ u.email }}" />
-                        <button class="btn btn-outline-secondary btn-md" type="submit" value="submit">Delete
+                        <!-- <input type="hidden" name="user" value="{{ u.email }}" /> -->
+                        <button class="btn btn-outline-danger btn-md" type="submit" name="deactivate"
+                            value="{{ u.email }}">Deactivate
+                            User</button>
+                </td>
+                {% else %}
+                <td>
+                    <form method="POST">
+                        <!-- <input type="hidden" name="user" value="{{ u.email }}" /> -->
+                        <button class="btn btn-outline-success btn-md" type="submit" name="activate"
+                            value="{{ u.email }}">Activate
+                            User</button>
+                </td>
+                {% endif %}
+                <td>
+                    <form method="POST">
+                        <!-- <input type="hidden" name="user" value="{{ u.email }}" /> -->
+                        <button class="btn btn-danger btn-md" type="submit" name="delete" value="{{ u.email }}">Delete
                             User</button>
                     </form>
                 </td>
