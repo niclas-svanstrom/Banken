@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 import barnum
 import random
 from flask_security import hash_password
-from flask_security import Security, SQLAlchemyUserDatastore, auth_required, hash_password
+from flask_security import SQLAlchemyUserDatastore, hash_password
 from flask_security.models import fsqla_v3 as fsqla
 from datetime import datetime  
 from datetime import timedelta  
@@ -61,7 +61,7 @@ class Transaction(db.Model):
     AccountId = db.Column(db.Integer, db.ForeignKey('Accounts.Id'), nullable=False)
 
 
-
+#had to move the app.security row to app.py to make azure work
 def seedData(app,db):
     # app.security = Security(app, user_datastore)
     app.security.datastore.db.create_all()

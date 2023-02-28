@@ -1,5 +1,6 @@
-from flask import render_template, redirect, Blueprint
-from flask_security import auth_required, logout_user
+from flask import render_template, redirect, Blueprint, current_app
+from flask_security import auth_required, logout_user, check_and_update_authn_fresh
+from datetime import timedelta
 
 from model import Customer, Account
 
@@ -10,10 +11,6 @@ siteBluePrint = Blueprint('site', __name__)
 def logout():
     logout_user()
     return redirect("/")
-
-@siteBluePrint.route("/test")
-def reset():
-    return render_template("security/forgot_password.html")
 
 
 

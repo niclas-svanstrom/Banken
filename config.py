@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 class ConfigDebug():
     SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:Nelsonpelson01@localhost/Bank'
@@ -10,6 +11,9 @@ class ConfigDebug():
     SECURITY_REGISTERABLE = True
     SECURITY_RECOVERABLE = True
     SECURITY_FRESHNESS_GRACE_PERIOD = 1
+    # SECURITY_TOKEN_MAX_AGE = 10
+
+
 
     #min setup på mailtrap
     MAIL_SERVER='sandbox.smtp.mailtrap.io'

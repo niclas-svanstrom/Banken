@@ -81,12 +81,7 @@ class FormsTestCases(unittest.TestCase):
 
 
     def test_when_withdrawing_more_than_balance_should_show_errormessage(self):
-        # app.security.datastore.create_role(name="Admin")
-        # app.security.datastore.create_user(email="unittest@me.com", password=hash_password("password"), roles=["Admin"])
-        # app.security.datastore.commit()
-        # set_current_user(app, app.security.datastore, "unittest@me.com")
         test_client = app.test_client()
-
         create_a_customer()
         customer = Customer.query.get(1)
         with test_client:
@@ -98,7 +93,6 @@ class FormsTestCases(unittest.TestCase):
 
 
     def test_when_credit_minus_amount_should_show_errormessage(self):
-        # set_current_user(app, app.security.datastore, "unittest@me.com")
         test_client = app.test_client()
         create_a_customer()
         customer = Customer.query.get(1)
@@ -110,7 +104,6 @@ class FormsTestCases(unittest.TestCase):
             self.assertTrue(ok)
 
     def test_when_transfering_more_than_balance_should_show_errormessage(self):
-        # set_current_user(app, app.security.datastore, "unittest@me.com")
         test_client = app.test_client()
         create_a_customer()
         customer = Customer.query.get(1)
@@ -123,7 +116,6 @@ class FormsTestCases(unittest.TestCase):
 
 
     def test_when_debit_minus_amount_should_show_errormessage(self):
-        # set_current_user(app, app.security.datastore, "unittest@me.com")
         test_client = app.test_client()
         with test_client:
             url = '/customer/1/1/debit'
@@ -200,12 +192,6 @@ class FormsTestCases(unittest.TestCase):
             ok = "Only digits in phonenumber except for -" in s
             self.assertTrue(ok)
 
-    # def test_when_creating_new_should_be_ok_when_name_is_ok(self):
-    #     test_client = app.test_client()
-    #     with test_client:
-    #         url = '/newcustomer'
-    #         response = test_client.post(url, data={ "name":"Kalle.se", "city":"Teststad", "age":"12", "countryCode":"SE", "Amount":"0" },headers={app.config["SECURITY_TOKEN_AUTHENTICATION_HEADER"]: "token"} )
-    #         self.assertEqual('302 FOUND', response.status)
 
 
 

@@ -123,7 +123,6 @@ def customer(id):
             a = Account.query.filter_by(Id = request.form['account_id']).first()
             if a.Balance > 0:
                 error = 'no_money_alert()'
-                # error = 'There is money on this account'
             else:
                 db.session.delete(a)
                 db.session.commit()
@@ -196,7 +195,6 @@ def account(c_id, a_id):
 @customerBluePrint.route("/customer/<c_id>/<a_id>/debit", methods=['GET', 'POST'])
 @auth_required()
 def debit(c_id, a_id):
-    error = None
     the_account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
@@ -218,13 +216,12 @@ def debit(c_id, a_id):
         return redirect(url_for('customer.customer', id=c_id))
     if request.method == 'GET':
         form.account.data = str(the_account.Id)
-    return render_template("customer/debit.html", customer=customer, error=error, form=form)
+    return render_template("customer/debit.html", customer=customer, form=form)
 
 
 @customerBluePrint.route("/customer/<c_id>/<a_id>/credit", methods=['GET', 'POST'])
 @auth_required()
 def credit(c_id, a_id):
-    error = None
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
@@ -249,13 +246,12 @@ def credit(c_id, a_id):
             return redirect(url_for('customer.customer', id=c_id))
     if request.method == 'GET':
         form.account.data = str(account.Id)
-    return render_template("customer/credit.html", customer=customer, error=error, form=form)
+    return render_template("customer/credit.html", customer=customer, form=form)
 
 
 @customerBluePrint.route("/customer/<c_id>/<a_id>/transfer", methods=['GET', 'POST'])
 @auth_required()
 def transfer(c_id, a_id):
-    error = None
     account = Account.query.filter_by(Id=a_id).first()
     accounts = Account.query.filter_by(CustomerId=c_id).all()
     customer = Customer.query.filter_by(Id=c_id).first()
@@ -293,4 +289,4 @@ def transfer(c_id, a_id):
             return redirect(url_for('customer.customer', id=c_id))
     if request.method == 'GET':
         form.from_account.data = str(account.Id)
-    return render_template("customer/transfer.html", customer=customer, error=error, form=form)
+    return render_template("customer/transfer.html", customer=customer, form=form)
