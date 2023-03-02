@@ -6,12 +6,14 @@ from areas.admin.adminPage import adminBluePrint
 from areas.customer.customerPage import customerBluePrint
 from areas.site.sitePage import siteBluePrint
 from areas.api.apiPage import apiBluePrint
-from model import user_datastore
-from datetime import timedelta
+from model import user_datastore, Transaction, Customer, Account
+from datetime import timedelta, datetime
 
+from flask_apscheduler import APScheduler
+from consoleapp.consoleapp import check_email
 
 from model import db, seedData
- 
+
 app = Flask(__name__)
 app.config.from_object('config.ConfigDebug')
 Mail(app)
@@ -32,10 +34,19 @@ def before_request():
 
 
 
+scheduler = APScheduler()
+
+def scheduleTask():
+    check_email(app, Transaction, Customer, Account)
+
+today = datetime(datetime.now().year,datetime.now().month,datetime.now().day, 22, 00, 00)
+
 if __name__  == "__main__":
+    scheduler.add_job(id = 'Scheduled Task', func=scheduleTask, start_date=today, trigger="interval", hours=24)
+    scheduler.start()
     with app.app_context():
         upgrade()
     
         seedData(app, db)
-        app.run(debug=True)
+        app.run()
 
