@@ -10,7 +10,7 @@ from model import user_datastore, Transaction, Customer, Account
 from datetime import timedelta, datetime
 
 from flask_apscheduler import APScheduler
-from consoleapp.consoleapp import check_email
+from consoleapp.consoleapp import check_for_shady_transactions
 
 from model import db, seedData
 
@@ -27,17 +27,17 @@ app.register_blueprint(customerBluePrint)
 app.register_blueprint(siteBluePrint)
 app.register_blueprint(apiBluePrint)
 
+#if you are inactive for 20 minutes the system will send you back to loginpage
 @app.before_request
 def before_request():
     session.permanent = True
     app.permanent_session_lifetime = timedelta(minutes=20)
 
 
-
+#starts the functions with shady transactions that will test it every night at 22:00
 scheduler = APScheduler()
-
 def scheduleTask():
-    check_email(app, Transaction, Customer, Account)
+    check_for_shady_transactions(app, Transaction, Customer, Account)
 
 today = datetime(datetime.now().year,datetime.now().month,datetime.now().day, 22, 00, 00)
 

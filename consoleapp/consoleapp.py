@@ -36,13 +36,12 @@ def open_new_file():
 #it in the email, it replaces everytime a new country has some shady transactions tho but i will also write out in the terminal what it have found :)
 
 # if __name__  == "__main__":
-def check_email(app, Transaction, Customer, Account):
+def check_for_shady_transactions(app, Transaction, Customer, Account):
     with app.app_context():
     #     upgrade()
         now = datetime.now()
 
         start = now - timedelta(hours = 72)
-        then = last_run()
         distinct = [x.Country for x in Customer.query.with_entities(Customer.Country).distinct()]
         for co in distinct:
             msg = Message('Shady Transactions', sender = '58d9c9a416909a', recipients = [f'{co}@testbanken.se'])

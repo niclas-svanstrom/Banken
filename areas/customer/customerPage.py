@@ -80,7 +80,9 @@ def new_customer():
         for cus in all_customers:
             if form.nationalid.data == cus.NationalId:
                 form.nationalid.errors += ('National ID already exists',)
-        if len(form.nationalid.errors) == 0:
+            elif form.email.data == cus.EmailAddress:
+                form.email.errors += ('Email already exists',)
+        if len(form.nationalid.errors) == 0 and len(form.email.errors) == 0:
             customer = Customer()
             account = Account()
             customer.GivenName =  form.givenname.data
@@ -138,25 +140,35 @@ def editcustomer(id):
     form = new_customer_form()
     if form.validate_on_submit():
         #spara i databas
-        customer.GivenName =  form.givenname.data
-        customer.Surname = form.surname.data
-        customer.Streetaddress = form.streetaddress.data
-        customer.City = form.city.data
-        customer.Zipcode = form.zipcode.data
-        customer.Country = form.country.data
-        if form.country.data == 'USA':
-            customer.CountryCode = pycountry.countries.get(name='United States').alpha_2
-        else:
-            customer.CountryCode = pycountry.countries.get(name=form.country.data).alpha_2
-        customer.Birthday = form.birthday.data
-        customer.NationalId = form.nationalid.data
-        customer.TelephoneCountryCode = form.phonecountrycode.data
-        customer.Telephone = form.phonenumber.data.replace(" ","")
-        customer.EmailAddress = form.email.data
-        customer.verified = True
-        db.session.commit()
-        flash('Customer Edited')
-        return redirect(url_for("customer.customers"))
+        all_customers = Customer.query.all()
+        for cus in all_customers:
+            if cus.NationalId == customer.NationalId:
+                pass
+            else:
+                if form.nationalid.data == cus.NationalId:
+                    form.nationalid.errors += ('National ID already exists',)
+                elif form.email.data == cus.EmailAddress:
+                    form.email.errors += ('Email already exists',)
+        if len(form.nationalid.errors) == 0 and len(form.email.errors) == 0:
+            customer.GivenName =  form.givenname.data
+            customer.Surname = form.surname.data
+            customer.Streetaddress = form.streetaddress.data
+            customer.City = form.city.data
+            customer.Zipcode = form.zipcode.data
+            customer.Country = form.country.data
+            if form.country.data == 'USA':
+                customer.CountryCode = pycountry.countries.get(name='United States').alpha_2
+            else:
+                customer.CountryCode = pycountry.countries.get(name=form.country.data).alpha_2
+            customer.Birthday = form.birthday.data
+            customer.NationalId = form.nationalid.data
+            customer.TelephoneCountryCode = form.phonecountrycode.data
+            customer.Telephone = form.phonenumber.data.replace(" ","")
+            customer.EmailAddress = form.email.data
+            customer.verified = True
+            db.session.commit()
+            flash('Customer Edited')
+            return redirect(url_for("customer.customers"))
     elif request.method == 'GET':
         form.givenname.data = customer.GivenName
         form.surname.data = customer.Surname
