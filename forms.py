@@ -22,7 +22,9 @@ def lower_than_one(form, field):
         raise ValidationError('Can not be lower than 1')
     
 def valid_zipcode(form, field):
-    if field.data < 0:
+    if not str(field.data).isdigit():
+        raise ValidationError("Must be a number")
+    elif field.data < 0:
         raise ValidationError("Zipcode can not be negative number")
 
 def valid_adress(form, field):
