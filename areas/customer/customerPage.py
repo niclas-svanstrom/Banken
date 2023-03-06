@@ -144,6 +144,8 @@ def editcustomer(id):
         for cus in all_customers:
             if cus.NationalId == customer.NationalId:
                 pass
+            elif cus.EmailAddress == customer.EmailAddress:
+                pass
             else:
                 if form.nationalid.data == cus.NationalId:
                     form.nationalid.errors += ('National ID already exists',)
